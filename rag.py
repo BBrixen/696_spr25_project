@@ -1,20 +1,23 @@
 from openai import OpenAI
 from retriever import get_raw_docs, get_best_chunks, get_build_index, get_query_engine
+from cacher import cache_decorator
 
 # handling apis
 from api_keys import openai_api_key
 client = OpenAI(api_key=openai_api_key)
 
 
+@cache_decorator
 def filter_docs(query, documents):
     '''
         Returns a subset of the document set which are filtered to be
         of high quality (mostly factual and limited bias)
     '''
     # TODO this is where we will try out different methods of filtering documents
+    # TODO to use the cache_decorator, this needs to return a string
     return documents
 
-
+@cache_decorator
 def get_rag_context(query, documents):
     '''
         This splits the documents into chunks and identifies the
@@ -42,7 +45,8 @@ def get_rag_context(query, documents):
     # return context
 
 
-def get_llm_response(rag_context, query):
+@cache_decorator
+def get_llm_response(query, rag_context):
     '''
         This will query the LLM to give the answer using the context. 
         This is the last step of the pipeline
@@ -86,7 +90,7 @@ def full_pipeline(query):
     documents = filter_docs(query, documents)   # filter out bad documents
 
     rag_ctx = get_rag_context(query, documents) # select key chunks from docs to inform model
-    llm_ans = get_llm_response(rag_ctx, query)  # get llm response using rag documents
+    llm_ans = get_llm_response(query, rag_ctx)  # get llm response using rag documents
     return llm_ans
 
 

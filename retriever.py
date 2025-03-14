@@ -15,6 +15,8 @@ import requests
 import math
 import signal
 
+from cacher import cache_decorator
+
 
 # some pages take too long to load
 class TimeoutException(Exception):
@@ -47,7 +49,7 @@ def google_scrape(url, timeout=10):
         signal.alarm(0) # ensure alarm is disabled even if there is an exception
     return None
 
-
+@cache_decorator
 def get_raw_docs(query, num_docs=10):
     '''
         This will get the raw documents from a google search. These documents are
@@ -176,7 +178,8 @@ def cosine_similarity(vec1, vec2):
 
 
 # my implementation of selecting chunks from docs
-def get_best_chunks(text, query, num_chunks=10):
+@cache_decorator
+def get_best_chunks(query, text, num_chunks=10):
     chunks = chunk_text(text, chunk_size=250)
     embedding_model = get_embedding_model()
     embeddings = [get_embeddings(embedding_model, chunk) for chunk in chunks]
