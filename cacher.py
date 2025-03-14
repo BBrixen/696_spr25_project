@@ -1,7 +1,8 @@
 import os
 
 cache_dir = "rag_cache"
-
+# TODO hash cache filenames instead of using the long query name
+# TODO or just use a prefix of the query
 
 def format_str_as_filename(s):
     return "_".join(s.split())
