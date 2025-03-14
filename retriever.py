@@ -5,14 +5,13 @@ from llama_index.core import Settings
 from llama_index.core import StorageContext
 from llama_index.core.postprocessor import MetadataReplacementPostProcessor, SentenceTransformerRerank
 from llama_index.core import SimpleDirectoryReader, Document
-from llama_index.llms.openai import OpenAI
-from llama_index.embeddings.openai import OpenAIEmbedding
 
 import numpy as np
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from googlesearch import search
 from bs4 import BeautifulSoup
 import requests
+import math
 
 
 def google_scrape(url):
@@ -156,7 +155,7 @@ def cosine_similarity(vec1, vec2):
 
 # my implementation of selecting chunks from docs
 def get_best_chunks(text, query, num_chunks=10):
-    chunks = chunk_text(text)
+    chunks = chunk_text(text, chunk_size=250)
     embedding_model = get_embedding_model()
     embeddings = [get_embeddings(embedding_model, chunk) for chunk in chunks]
 

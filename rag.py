@@ -32,8 +32,8 @@ def get_rag_context(query, documents):
     combined_text = "\n\n".join([doc.text for doc in documents])
     best_chunks = get_best_chunks(combined_text, query)
 
-    content_text = "\n\n".join(best_chunks)
-    return context_text
+    context = "\n\n".join(best_chunks)
+    return context
 
 
 def get_llm_response(rag_context, query):
@@ -78,7 +78,6 @@ def full_pipeline(query):
         This is the main RAG pipeline
     '''
     documents = get_raw_docs(query)             # collect large set of documents from web search
-    print(type(documents))
     documents = filter_docs(query, documents)   # filter out bad documents
 
     rag_ctx = get_rag_context(query, documents) # select key chunks from docs to inform model
