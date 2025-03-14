@@ -1,7 +1,5 @@
-from google import google
 import openai
-from retriever import get_raw_docs, get_build_index, get_query_engine
-
+from retriever import get_raw_docs, get_best_chunks
 # handling apis
 from api_keys import openai_api_key
 openai.api_key = openai_api_key
@@ -9,11 +7,11 @@ openai.api_key = openai_api_key
 
 def filter_docs(query, documents):
     '''
-        Returns a subset of the document_set which are filtered to be
+        Returns a subset of the document set which are filtered to be
         of high quality (mostly factual and limited bias)
     '''
     # TODO this is where we will try out different methods of filtering documents
-    return document_set
+    return documents
 
 
 def get_rag_context(query, documents):
@@ -24,13 +22,18 @@ def get_rag_context(query, documents):
         This takes the long list of input documents and finds key portions of
         those documents to serve as the RAG documents for the LLM
     '''
-    # Get the Vector Index
-    vector_index = get_build_index(documents=documents, embed_model="local:BAAI/bge-small-en-v1.5", save_dir="./vector_store/index")
-    # Create a query engine with the specified parameters
-    query_engine = get_query_engine(sentence_index=vector_index, similarity_top_k=10, rerank_top_n=5)
+    # # Get the Vector Index
+    # vector_index = get_build_index(documents=documents, embed_model="local:BAAI/bge-small-en-v1.5", save_dir="./vector_store/index")
+    # # Create a query engine with the specified parameters
+    # query_engine = get_query_engine(sentence_index=vector_index, similarity_top_k=10, rerank_top_n=5)
 
-    context_docs = query_engine.query(query)
-    return context_docs
+    # context_docs = query_engine.query(query)
+
+    combined_text = "\n\n".join([doc.text for doc in documents])
+    best_chunks = get_best_chunks(combined_text, query)
+
+    content_text = "\n\n".join(best_chunks)
+    return context_text
 
 
 def get_llm_response(rag_context, query):
@@ -47,7 +50,8 @@ def get_llm_response(rag_context, query):
                 "role": "system", 
                 "content": f'''
                 You are an intelligent assistant. Generate a detailed response for the following query asked by the user based on your own knowledge and the context fetched. 
-                Context: {rag_context}
+                Context:
+                {rag_context}
 
                 Instructions:
                 1. Be crisp and concise.
@@ -73,17 +77,18 @@ def full_pipeline(query):
     '''
         This is the main RAG pipeline
     '''
-    documents = get_raw_docs(query)             # collect large set of documents from google
+    documents = get_raw_docs(query)             # collect large set of documents from web search
+    print(type(documents))
     documents = filter_docs(query, documents)   # filter out bad documents
 
     rag_ctx = get_rag_context(query, documents) # select key chunks from docs to inform model
     llm_ans = get_llm_response(rag_ctx, query)  # get llm response using rag documents
+    return llm_ans
 
 
 def main():
-    query = "TODO"
+    query = "what is retrieval augmented generation"
     print(full_pipeline(query))
-
 
 if __name__ == '__main__':
     main()
