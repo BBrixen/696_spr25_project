@@ -1,5 +1,5 @@
 import openai
-from retriever import get_raw_docs, get_best_chunks
+from retriever import get_raw_docs, get_best_chunks, get_build_index, get_query_engine
 # handling apis
 from api_keys import openai_api_key
 openai.api_key = openai_api_key
@@ -22,18 +22,23 @@ def get_rag_context(query, documents):
         This takes the long list of input documents and finds key portions of
         those documents to serve as the RAG documents for the LLM
     '''
-    # # Get the Vector Index
-    # vector_index = get_build_index(documents=documents, embed_model="local:BAAI/bge-small-en-v1.5", save_dir="./vector_store/index")
-    # # Create a query engine with the specified parameters
-    # query_engine = get_query_engine(sentence_index=vector_index, similarity_top_k=10, rerank_top_n=5)
+    # fancy (better) approach
+    # Get the Vector Index
+    vector_index = get_build_index(documents=documents, embed_model="local:BAAI/bge-small-en-v1.5", save_dir="./vector_store/index")
+    # Create a query engine with the specified parameters
+    query_engine = get_query_engine(sentence_index=vector_index, similarity_top_k=10, rerank_top_n=5)
 
-    # context_docs = query_engine.query(query)
-
-    combined_text = "\n\n".join([doc.text for doc in documents])
-    best_chunks = get_best_chunks(combined_text, query)
-
-    context = "\n\n".join(best_chunks)
+    engine_response = query_engine.query(query)
+    context_docs = engine_response.source_nodes
+    context = "\n\n".join([doc.text.replace("\n", " ") for doc in context_docs])
     return context
+
+    # manual approach
+    # combined_text = "\n\n".join([doc.text for doc in documents])
+    # best_chunks = get_best_chunks(combined_text, query)
+
+    # context = "\n\n".join(best_chunks)
+    # return context
 
 
 def get_llm_response(rag_context, query):
@@ -86,7 +91,7 @@ def full_pipeline(query):
 
 
 def main():
-    query = "what is retrieval augmented generation"
+    query = "what does elon musk do"
     print(full_pipeline(query))
 
 if __name__ == '__main__':

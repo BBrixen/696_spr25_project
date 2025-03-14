@@ -5,25 +5,47 @@ from llama_index.core import Settings
 from llama_index.core import StorageContext
 from llama_index.core.postprocessor import MetadataReplacementPostProcessor, SentenceTransformerRerank
 from llama_index.core import SimpleDirectoryReader, Document
-
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
 import numpy as np
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from googlesearch import search
 from bs4 import BeautifulSoup
 import requests
 import math
+import signal
 
 
-def google_scrape(url):
+# some pages take too long to load
+class TimeoutException(Exception):
+    pass
+
+def timeout_handler(signum, frame):
+    raise TimeoutException()
+
+
+def google_scrape(url, timeout=10):
     try:
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(timeout)
+
         page = requests.get(url)
         if "text/html" not in page.headers["Content-Type"]:
+            print(f"No html on {url}")
             return None
         soup = BeautifulSoup(page.content, "html.parser")
         text = soup.get_text(separator="\n", strip=True)
+
+        # reset alarm after function completes
+        signal.alarm(0)
         return text
+    except TimeoutException:
+        print(f"Timeout: {url} took too long.")
     except Exception as e:
-        return None
+        print(f"Error scraping {url}: {e}")
+    finally:
+        signal.alarm(0) # ensure alarm is disabled even if there is an exception
+    return None
 
 
 def get_raw_docs(query, num_docs=10):
@@ -62,7 +84,7 @@ def get_build_index(documents,
 
     # Set index settings
     Settings.llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
-    # Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small", embed_batch_size=100)
+    Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small", embed_batch_size=100)
     Settings.node_parser = SentenceSplitter(chunk_size=1000, chunk_overlap=200)
     Settings.num_output = 512
     Settings.context_window = 3900

@@ -1,2 +1,4 @@
 api_keys.py
 venv/
+__pycache__/
+vector_store/
