@@ -1,8 +1,9 @@
-import openai
+from openai import OpenAI
 from retriever import get_raw_docs, get_best_chunks, get_build_index, get_query_engine
+
 # handling apis
 from api_keys import openai_api_key
-openai.api_key = openai_api_key
+client = OpenAI(api_key=openai_api_key)
 
 
 def filter_docs(query, documents):
@@ -70,8 +71,7 @@ def get_llm_response(rag_context, query):
             }
         ]
 
-    chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=messages)
+    chat = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
 
     reply = chat.choices[0].message.content
     # TODO  make the messages grow with each reponse? 
