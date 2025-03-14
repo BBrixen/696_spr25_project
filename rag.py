@@ -75,7 +75,7 @@ def get_llm_response(query, rag_context):
             }
         ]
 
-    chat = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
+    chat = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
 
     reply = chat.choices[0].message.content
     # TODO  make the messages grow with each reponse? 

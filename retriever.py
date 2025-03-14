@@ -85,7 +85,7 @@ def get_build_index(documents,
     """
 
     # Set index settings
-    Settings.llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
+    Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)
     Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small", embed_batch_size=100)
     Settings.node_parser = SentenceSplitter(chunk_size=1000, chunk_overlap=200)
     Settings.num_output = 512
