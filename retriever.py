@@ -25,6 +25,7 @@ class TimeoutException(Exception):
 def timeout_handler(signum, frame):
     raise TimeoutException()
 
+
 @cache
 def google_scrape(url, timeout=10):
     try:
@@ -49,12 +50,14 @@ def google_scrape(url, timeout=10):
         signal.alarm(0) # ensure alarm is disabled even if there is an exception
     return None
 
+
 @cache
 def get_raw_docs(query, num_docs=10):
     '''
         This will get the raw documents from a google search. These documents are
         then used to build the vector model for searching. 
     '''
+    # TODO add support for injecting incorrect documents
     results = []
     for url in search(query, tld="co.in", num=num_docs, stop=num_docs, pause=2):
         text = google_scrape(url)
@@ -69,26 +72,24 @@ following this tutorial:
 https://www.freecodecamp.org/news/how-to-build-a-rag-pipeline-with-llamaindex/
 '''
 
-def get_build_index(documents,
-        embed_model="local:BAAI/bge-small-en-v1.5", 
-        save_dir="./vector_store/index"):
+def get_build_index(documents, local=True):
     """
     Builds or loads a vector store index from the given documents.
 
     Args:
         documents (list[Document]): A list of Document objects.
-        embed_model (str, optional): The embedding model to use. Defaults to "local:BAAI/bge-small-en-v1.5".
-        save_dir (str, optional): The directory to save or load the index from. Defaults to "./vector_store/index".
 
     Returns:
         VectorStoreIndex: The built or loaded index.
     """
 
-    # Set index settings
-    # Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)
-    # Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small", embed_batch_size=100)
-    Settings.llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
-    Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+    # pick llm to use
+    if local:
+        Settings.llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
+        Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+    else:
+        Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)
+        Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small", embed_batch_size=100)
 
     Settings.node_parser = SentenceSplitter(chunk_size=1000, chunk_overlap=200)
     Settings.num_output = 512
@@ -97,7 +98,6 @@ def get_build_index(documents,
     index = VectorStoreIndex.from_documents(
         documents, service_context=Settings
     )
-    index.storage_context.persist(persist_dir=save_dir)
     return index
 
 

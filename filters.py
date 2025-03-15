@@ -1,11 +1,11 @@
 from cacher import cache
+from llm_interactions import ask_llm
 
-@cache
-def ask_llm_trust(query, documents):
-    # TODO documents needs to be a string
+
+def llm_trust(query, documents, local=True):
+    # TODO need to finish for mid semester report
     return documents
 
-@cache
-def ask_llm_summarize(query, documents):
-    # TODO documents needs to be a string
+
+def google_support(query, documents, local=True):
     return documents
