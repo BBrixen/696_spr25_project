@@ -94,21 +94,6 @@ def get_build_index(documents,
     Settings.num_output = 512
     Settings.context_window = 3900
 
-    # # Check if the save directory exists
-    # if not os.path.exists(save_dir):
-    #     # Create and load the index
-    #     index = VectorStoreIndex.from_documents(
-    #         [documents], service_context=Settings
-    #     )
-    #     index.storage_context.persist(persist_dir=save_dir)
-    # else:
-    #     # Load the existing index
-    #     index = load_index_from_storage(
-    #         StorageContext.from_defaults(persist_dir=save_dir),
-    #         service_context=Settings,
-    #     )
-
-    # always building, because the documents might change in between uses
     index = VectorStoreIndex.from_documents(
         documents, service_context=Settings
     )

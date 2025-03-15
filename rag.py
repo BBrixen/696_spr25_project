@@ -70,7 +70,6 @@ def get_llm_response(query, rag_context):
         ]
 
     chat = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
-
     reply = chat.choices[0].message.content
     return reply
 
