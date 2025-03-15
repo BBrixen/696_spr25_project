@@ -15,7 +15,7 @@ import requests
 import math
 import signal
 
-from cacher import cache_decorator
+from cacher import cache
 
 
 # some pages take too long to load
@@ -25,7 +25,7 @@ class TimeoutException(Exception):
 def timeout_handler(signum, frame):
     raise TimeoutException()
 
-
+@cache
 def google_scrape(url, timeout=10):
     try:
         signal.signal(signal.SIGALRM, timeout_handler)
@@ -49,7 +49,7 @@ def google_scrape(url, timeout=10):
         signal.alarm(0) # ensure alarm is disabled even if there is an exception
     return None
 
-@cache_decorator
+@cache
 def get_raw_docs(query, num_docs=10):
     '''
         This will get the raw documents from a google search. These documents are
@@ -85,8 +85,11 @@ def get_build_index(documents,
     """
 
     # Set index settings
-    Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)
-    Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small", embed_batch_size=100)
+    # Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)
+    # Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small", embed_batch_size=100)
+    Settings.llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
+    Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+
     Settings.node_parser = SentenceSplitter(chunk_size=1000, chunk_overlap=200)
     Settings.num_output = 512
     Settings.context_window = 3900
@@ -178,7 +181,7 @@ def cosine_similarity(vec1, vec2):
 
 
 # my implementation of selecting chunks from docs
-@cache_decorator
+@cache
 def get_best_chunks(query, text, num_chunks=10):
     chunks = chunk_text(text, chunk_size=250)
     embedding_model = get_embedding_model()

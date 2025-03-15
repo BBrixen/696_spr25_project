@@ -4,16 +4,15 @@ cache_dir = "rag_cache"
 # TODO hash cache filenames instead of using the long query name
 # TODO or just use a prefix of the query
 
-def format_str_as_filename(s):
-    return "_".join(s.split())
+def hash_query(s):
+    return f"q_{hash(s)}"
 
 def get_dir_path(step):
-    step_dir = format_str_as_filename(step)
-    dir_path = f"./{cache_dir}/{step_dir}"
+    dir_path = f"./{cache_dir}/{step}"
     return dir_path
 
 def get_file(query, step):
-    query_file = f"{get_dir_path(step}/{format_str_as_filename(query)}.txt"
+    query_file = f"{get_dir_path(step}/{hash_query(query)}.txt"
     return query_file
 
 
@@ -24,7 +23,7 @@ def cache_result(query, step, text):
     '''
 
     # query and step form a key for the text (which is a value)
-    query_fn = format_str_as_filename(query)
+    query_fn = hash_query(query)
     dir_path = get_dir_path(step)
     os.makedirs(dir_path, exist_ok=True)
 
@@ -32,7 +31,7 @@ def cache_result(query, step, text):
         file.write(text)
 
 def check_cache(query, step):
-    query_fn = format_str_as_filename(query)
+    query_fn = hash_query(query)
     dir_path = get_dir_path(step)
     os.makedirs(dir_path, exist_ok=True)
     file = get_file(query, step)
@@ -44,7 +43,7 @@ def check_cache(query, step):
     
 
 # this is the main baddie. looking hot ngl
-def cache_decorator(func):
+def cache(func):
     @functools.wrap(func)
     def wrapper(query, *args, **kwargs):
         func_name = func.__name__
