@@ -54,15 +54,24 @@ def google_scrape(url, timeout=10):
     return retval
 
 
+@cache
+def get_google_urls(query, num_docs):
+    urls = []
+    for url in search(query, tld="co.in", num=num_docs, stop=num_docs, pause=2):
+        urls.append(url)
+    # use \n as url separator, since that wont be present
+    return "\n".join(urls)
+
+
 def get_raw_docs(query, num_docs=10):
     '''
         This will get the raw documents from a google search. These documents are
         then used to build the vector model for searching. 
     '''
-    # TODO make this return a string so we can cache it
-    # TODO add support for injecting incorrect documents
+    # TODO add support for injecting incorrect documents  (later, for testing)
     results = []
-    for url in search(query, tld="co.in", num=num_docs, stop=num_docs, pause=2):
+    urls = get_google_urls(query, num_docs)
+    for url in urls.split("\n"):
         text = google_scrape(url)
         if text is None or text == "":
             continue

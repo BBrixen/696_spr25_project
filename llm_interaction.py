@@ -9,22 +9,24 @@ client = OpenAI(api_key=openai_api_key)
 openai.api_key = openai_api_key
 
 
-def ask_llm(prompt, local=True):
+def ask_llm(query, prompt, local=True):
+    # the query is the original query that started everything
+    # it is not used except for caching these responses
     if local:
-        return ask_llama(prompt)
+        return ask_llama(query, prompt)
     else:
-        return ask_openai(prompt)
+        return ask_openai(query, prompt)
 
 
 @cache
-def ask_llama(prompt):
+def ask_llama(query, prompt):
     llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
     output = llm(prompt)
     return output["choices"][0]["text"]
 
 
 @cache
-def ask_openai(prompt):
+def ask_openai(query, prompt):
     messages = [ 
             {
                 "role": "user", 

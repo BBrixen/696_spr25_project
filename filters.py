@@ -1,11 +1,45 @@
-from cacher import cache
 from llm_interactions import ask_llm
 
+'''
+Below are the methods for filtering. Each should take
+the document that we want to investigate
 
-def llm_trust(query, documents, local=True):
-    # TODO need to finish for mid semester report
-    return documents
+Currently, the query is included in the method signature because
+later it *might* be useful to include for checking. And all these functions
+need to take the same inputs, so changing 1 means changing all of them
+
+It should return a boolean, where false means the document should
+be discarded
+
+(For caching, the document forms the unique id for this function call,
+which is different from the usual query. The thought behind this is, that
+the result from this function should be the same for each document passed in.
+If any of these functions does something expensive (themselves), we can cache it,
+otherwise the ask_llm will end up caching for us)
+'''
+
+def no_filter(query, document, local=True):
+    return True  # default, all documents pass
 
 
-def google_support(query, documents, local=True):
-    return documents
+def llm_trust(query, document, local=True):
+    prompt = f"""
+    Do you believe that the following document contains only factual and unbiased information.
+    Use the source of the document, as well as any other information you can infer, to aid
+    in your evaluation.
+
+    Document:
+    {document}
+
+    Instructions:
+    1. Respond with ONLY "yes" or "no"
+    2. A "yes" means that this document only contains factual and unbiased information.
+    """
+    # recall that for caching, the document is the unique id for this func call
+    llm_trust_ans = ask_llm(document, prompt, local=local)
+    print(llm_trust_ans.lower())
+    return llm_trust_ans.lower() == 'yes'
+
+
+def google_support(query, document, local=True):
+    return True  # default, all documents pass
