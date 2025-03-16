@@ -1,19 +1,17 @@
 import os
+import functools
+import hashlib
 
-cache_dir = "rag_cache"
-# TODO hash cache filenames instead of using the long query name
-# TODO or just use a prefix of the query
+cache_dir = "cache_rag"
 
 def hash_query(s):
-    return f"q_{hash(s)}"
+    return f"q_{hashlib.sha256(s.encode('utf-8')).hexdigest()}"
 
 def get_dir_path(step):
-    dir_path = f"./{cache_dir}/{step}"
-    return dir_path
+    return f"./{cache_dir}/{step}"
 
 def get_file(query, step):
-    query_file = f"{get_dir_path(step}/{hash_query(query)}.txt"
-    return query_file
+    return f"{get_dir_path(step)}/{hash_query(query)}.txt"
 
 
 def cache_result(query, step, text):
@@ -44,7 +42,7 @@ def check_cache(query, step):
 
 # this is the main baddie. looking hot ngl
 def cache(func):
-    @functools.wrap(func)
+    @functools.wraps(func)
     def wrapper(query, *args, **kwargs):
         func_name = func.__name__
         query_file = get_file(query, func_name)

@@ -3,7 +3,7 @@ from cacher import cache
 from llm_interaction import ask_llm
 
 
-def filter_docs(query, documents):
+def filter_docs(query, documents, local=True):
     '''
         Returns a subset of the document set which are filtered to be
         of high quality (mostly factual and limited bias)
@@ -51,13 +51,13 @@ def full_pipeline(query):
     '''
         This is the main RAG pipeline
     '''
-    local=True                                               # use llama local, or openai
-    documents = get_raw_docs(query)                          # collect large set of documents from web search
-    documents = filter_docs(query, documents, local=local)   # filter out bad documents
-
-    rag_ctx = get_rag_context(query, documents, local=local) # select key chunks from docs to inform model
-    rag_prompt = llm_prompt(query, rag_ctx)                  # combine rag docs with query for make llm prompt
-    llm_ans = ask_llm(prompt, local=local)                   # get llm response using rag documents
+    local = False  # if false, this will use openai 
+    documents = get_raw_docs(query)
+    documents = filter_docs(query, documents, local=local)
+    # select key chunks from docs to inform model
+    rag_ctx = get_rag_context(query, documents, local=local)
+    rag_prompt = llm_prompt(query, rag_ctx)
+    llm_ans = ask_llm(prompt, local=local)
     return llm_ans
 
 

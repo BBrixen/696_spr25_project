@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 import requests
 import math
 import signal
+from llama_cpp import Llama
 
 from cacher import cache
 
@@ -28,6 +29,7 @@ def timeout_handler(signum, frame):
 
 @cache
 def google_scrape(url, timeout=10):
+    retval = None
     try:
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(timeout)
@@ -44,24 +46,26 @@ def google_scrape(url, timeout=10):
         return text
     except TimeoutException:
         print(f"Timeout: {url} took too long.")
+        retval = ""
     except Exception as e:
         print(f"Error scraping {url}: {e}")
+        retval = None
     finally:
         signal.alarm(0) # ensure alarm is disabled even if there is an exception
-    return None
+    return retval
 
 
-@cache
 def get_raw_docs(query, num_docs=10):
     '''
         This will get the raw documents from a google search. These documents are
         then used to build the vector model for searching. 
     '''
+    # TODO make this return a string so we can cache it
     # TODO add support for injecting incorrect documents
     results = []
     for url in search(query, tld="co.in", num=num_docs, stop=num_docs, pause=2):
         text = google_scrape(url)
-        if text is None:
+        if text is None or text == "":
             continue
 
         results.append(Document(text=text))
