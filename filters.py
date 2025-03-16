@@ -1,4 +1,4 @@
-from llm_interactions import ask_llm
+from llm_interaction import ask_llm
 
 '''
 Below are the methods for filtering. Each should take
@@ -23,6 +23,8 @@ def no_filter(query, document, local=True):
 
 
 def llm_trust(query, document, local=True):
+    document = document.text.replace("\n", " ")  # convert Document obj into str
+
     prompt = f"""
     Do you believe that the following document contains only factual and unbiased information.
     Use the source of the document, as well as any other information you can infer, to aid
@@ -37,7 +39,6 @@ def llm_trust(query, document, local=True):
     """
     # recall that for caching, the document is the unique id for this func call
     llm_trust_ans = ask_llm(document, prompt, local=local)
-    print(llm_trust_ans.lower())
     return llm_trust_ans.lower() == 'yes'
 
 

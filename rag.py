@@ -23,6 +23,9 @@ def get_rag_context(query, documents, local=True):
         This takes the long list of input documents and finds key portions of
         those documents to serve as the RAG documents for the LLM
     '''
+    if len(documents) == 0:
+        return "No external context"  # edge case
+
     # Get the Vector Index
     vector_index = get_build_index(documents=documents, local=local)
     # Create a query engine with the specified parameters
@@ -69,7 +72,7 @@ def full_pipeline(query, filter_method):
 def main():
     # main hyperparameters that define how this rag query will run
     query = "what does elon musk do"
-    filter_method = filters.no_filter
+    filter_method = filters.llm_trust
     ans = full_pipeline(query, filter_method)
     print(ans)
 
