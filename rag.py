@@ -28,6 +28,7 @@ def get_rag_context(query, documents, local=True):
     engine_response = query_engine.query(query)
     context_docs = engine_response.source_nodes
     context = "\n\n".join([doc.text.replace("\n", " ") for doc in context_docs])
+    print(type(context))
     return context
 
 
@@ -57,7 +58,7 @@ def full_pipeline(query):
     # select key chunks from docs to inform model
     rag_ctx = get_rag_context(query, documents, local=local)
     rag_prompt = llm_prompt(query, rag_ctx)
-    llm_ans = ask_llm(prompt, local=local)
+    llm_ans = ask_llm(rag_prompt, local=local)
     return llm_ans
 
 

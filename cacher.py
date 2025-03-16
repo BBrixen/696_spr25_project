@@ -19,6 +19,10 @@ def cache_result(query, step, text):
     caches results from LLM and retrieval lookups so that we dont keep 
     querying LLMs in each test run (saves us some money)
     '''
+    # debug printing
+    if type(text) is not str:
+        print(f"unable to cache {func_name}. {type(func_retval)=}")
+        return
 
     # query and step form a key for the text (which is a value)
     query_fn = hash_query(query)
@@ -27,6 +31,8 @@ def cache_result(query, step, text):
 
     with open(f"{dir_path}/{query_fn}.txt", 'w') as file:
         file.write(text)
+    print(f"cache PUT {step}/{query_fn}")
+
 
 def check_cache(query, step):
     query_fn = hash_query(query)
@@ -36,6 +42,9 @@ def check_cache(query, step):
 
     if not os.path.isfile(file):
         return None
+
+    query_file = get_file(query, step)
+    print(f"cache GET {step}/{query_fn}")
     with open(file) as f:
         return f.read()
     
@@ -50,14 +59,11 @@ def cache(func):
         # use cache result if it exists
         cached_result = check_cache(query, func_name)
         if cached_result is not None:
-            print(f"cache GET {query_file}")
             return cached_result
 
         # call function and cache its return value for future calls
         func_retval = func(query, *args, **kwargs)
-        if type(func_retval) is str:
-            print(f"cache PUT {query_file}")
-            cache_result(query, func_name, func_retval)
+        cache_result(query, func_name, func_retval)
         return func_retval
     return wrapper
 

@@ -1,10 +1,12 @@
 from openai import OpenAI
 from cacher import cache
+import openai
 from llama_cpp import Llama
 
 # handling apis
 from api_keys import openai_api_key
 client = OpenAI(api_key=openai_api_key)
+openai.api_key = openai_api_key
 
 
 def ask_llm(prompt, local=True):

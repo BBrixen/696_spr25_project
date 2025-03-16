@@ -15,7 +15,6 @@ import requests
 import math
 import signal
 from llama_cpp import Llama
-
 from cacher import cache
 
 
@@ -92,7 +91,7 @@ def get_build_index(documents, local=True):
         Settings.llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
         Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
     else:
-        Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)
+        Settings.llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
         Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small", embed_batch_size=100)
 
     Settings.node_parser = SentenceSplitter(chunk_size=1000, chunk_overlap=200)
