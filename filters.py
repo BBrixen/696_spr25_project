@@ -36,9 +36,12 @@ def llm_trust(query, document, local=True):
     Instructions:
     1. Respond with ONLY "yes" or "no"
     2. A "yes" means that this document only contains factual and unbiased information.
+    3. A "no" means that this document contains verifiably incorrect claims, or aims to mislead the reader through clear bias.
     """
     # recall that for caching, the document is the unique id for this func call
     llm_trust_ans = ask_llm(document, prompt, local=local)
+    if llm_trust_ans.lower() == 'yes':
+        print(prompt)
     return llm_trust_ans.lower() == 'yes'
 
 
