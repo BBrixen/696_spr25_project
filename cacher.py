@@ -21,7 +21,7 @@ def cache_result(query, step, text):
     '''
     # debug printing
     if type(text) is not str:
-        print(f"unable to cache {func_name}. {type(func_retval)=}")
+        print(f"unable to cache {step}. {type(text)=}")
         return
 
     # query and step form a key for the text (which is a value)
