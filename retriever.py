@@ -16,6 +16,7 @@ import math
 import signal
 from llama_cpp import Llama
 from cacher import cache
+import multiprocessing
 
 
 # some pages take too long to load
@@ -25,13 +26,13 @@ class TimeoutException(Exception):
 def timeout_handler(signum, frame):
     raise TimeoutException()
 
-
 @cache
-def google_scrape(url, timeout=10):
+def google_scrape(url, array: list[str], timeout=10):
     retval = None
     try:
-        signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(timeout)
+        #signal.signal(signal.SIGALRM, timeout_handler)
+        #signal.alarm(timeout)
+
 
         page = requests.get(url)
         if "text/html" not in page.headers["Content-Type"]:
@@ -41,7 +42,9 @@ def google_scrape(url, timeout=10):
         text = soup.get_text(separator="\n", strip=True)
 
         # reset alarm after function completes
-        signal.alarm(0)
+        #signal.alarm(0)
+        array.append(text)
+        #print(array)
         return text
     except TimeoutException:
         print(f"Timeout: {url} took too long.")
@@ -49,8 +52,9 @@ def google_scrape(url, timeout=10):
     except Exception as e:
         print(f"Error scraping {url}: {e}")
         retval = None
-    finally:
-        signal.alarm(0) # ensure alarm is disabled even if there is an exception
+    #finally:
+        #signal.alarm(0) # ensure alarm is disabled even if there is an exception
+    array.append(retval)
     return retval
 
 
@@ -72,11 +76,21 @@ def get_raw_docs(query, num_docs=10):
     results = []
     urls = get_google_urls(query, num_docs)
     for url in urls.split("\n"):
-        text = google_scrape(url)
-        if text is None or text == "":
-            continue
+        scrapeList = []
+        p = multiprocessing.Process(target=google_scrape, args=(url, scrapeList,))
+        p.start()
+        p.join(20)
+        if p.is_alive():
+            print("Timed out.")
+            p.terminate()
+            p.join()
+        else:
+            print(scrapeList)
+            text = scrapeList[0]
+            if text is None or text == "":
+                continue
 
-        results.append(Document(text=text))
+            results.append(Document(text=text))
     return results
 
 '''
