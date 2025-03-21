@@ -1,4 +1,5 @@
 from llm_interaction import ask_llm
+import string
 
 '''
 Below are the methods for filtering. Each should take
@@ -39,9 +40,8 @@ def llm_trust(query, document, local=True):
 
     # recall that for caching, the document is the unique id for this func call
     llm_trust_ans = ask_llm(document, prompt, local=local)
-    if llm_trust_ans.lower() == 'yes':
-        print(prompt)
-    return llm_trust_ans.lower() == 'yes'
+    llm_trust_ans = llm_trust_ans.lower().strip().translate(str.maketrans('','',string.punctuation)).strip()
+    return llm_trust_ans == 'yes'
 
 
 def google_support(query, document, local=True):

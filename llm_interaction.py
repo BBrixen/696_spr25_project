@@ -1,7 +1,8 @@
 from openai import OpenAI
 from cacher import cache
 import openai
-from llama_cpp import Llama
+# from llama_cpp import Llama
+from llama_index.llms.ollama import Ollama
 
 # handling apis
 from api_keys import openai_api_key
@@ -20,9 +21,12 @@ def ask_llm(query, prompt, local=True):
 
 @cache
 def ask_llama(query, prompt):
-    llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
-    output = llm(prompt)
-    return output["choices"][0]["text"]
+    # llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
+    # output = llm(prompt)
+    # return output["choices"][0]["text"]
+    llm = Ollama(model='llama2', request_timeout=60.0)
+    response = llm.complete(prompt)
+    return response.text
 
 
 @cache

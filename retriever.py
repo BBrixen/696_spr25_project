@@ -17,6 +17,7 @@ import signal
 from llama_cpp import Llama
 from cacher import cache
 import multiprocessing
+from llama_index.llms.ollama import Ollama
 
 
 @cache
@@ -92,7 +93,9 @@ def get_build_index(documents, local=True):
 
     # pick llm to use
     if local:
-        Settings.llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
+        # Settings.llm = Llama(model_path="./models/codellama-13b.Q3_K_S.gguf")
+        # Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+        Settings.llm = Ollama(model="llama2", request_timeout=60.0)
         Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
     else:
         Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)

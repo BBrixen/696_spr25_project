@@ -45,7 +45,7 @@ def check_cache(query, step):
 
     query_file = get_file(query, step)
     print(f"cache GET {step}/{query_fn}")
-    with open(file, enconding='utf-8') as f:
+    with open(file, encoding='utf-8') as f:
         return f.read()
     
 
