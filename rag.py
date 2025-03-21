@@ -11,11 +11,14 @@ def filter_docs(query, documents, filter_method, local=True):
     '''
     # currently, query param is not used for anything, but it *might* come
     # in handy for some filter methods later? 
-    return [doc for doc in documents if filter_method(query, doc, local=local)]
+
+    documents = documents.split("\n\n")  # separator added by get_key_documents()
+    documents = [doc for doc in documents if filter_method(query, doc, local=local)]
+    return "\n\n".join(documents)
 
 
 @cache
-def get_rag_context(query, documents, local=True):
+def get_key_documents(query, documents, local=True):
     '''
         This splits the documents into chunks and identifies the
         most useful documents for the given query. 
@@ -26,16 +29,15 @@ def get_rag_context(query, documents, local=True):
     if len(documents) == 0:
         return "No external context"  # edge case
 
-    # Get the Vector Index
+    # Get the Vector Index and Query Engine
     vector_index = get_build_index(documents=documents, local=local)
-    # Create a query engine with the specified parameters
     query_engine = get_query_engine(sentence_index=vector_index, similarity_top_k=10, rerank_top_n=5)
 
     engine_response = query_engine.query(query)
     context_docs = engine_response.source_nodes
-    context = "\n\n".join([doc.text.replace("\n", " ") for doc in context_docs])
-    print(type(context))
-    return context
+    return "\n\n".join([doc.text.replace("\n", " ") for doc in context_docs])
+    # \n\n is doc separator since no documents contain \n in them 
+    # \n is removed during fetch, and removed again now just in case
 
 
 def llm_prompt(query, rag_context):
@@ -58,13 +60,16 @@ def full_pipeline(query, filter_method):
     '''
         This is the main RAG pipeline
     '''
-    local = False  # if false, this will use openai 
+    local = True  # if false, this will use openai 
 
+    # initial docs from google
     documents = get_raw_docs(query)
-    documents = filter_docs(query, documents, filter_method, local=local)
-    # select key chunks from docs to inform model
-    rag_ctx = get_rag_context(query, documents, local=local)
-    rag_prompt = llm_prompt(query, rag_ctx)
+    # select key portions of documents
+    key_docs = get_key_documents(query, documents, local=local)
+    # filter misinformation
+    key_docs = filter_docs(query, key_docs, filter_method, local=local)
+    # final prompt to llm
+    rag_prompt = llm_prompt(query, key_docs)
     llm_ans = ask_llm(query, rag_prompt, local=local)
     return llm_ans
 

@@ -29,6 +29,7 @@ def google_scrape(url, timeout=10):
                 return None
             soup = BeautifulSoup(page.content, "html.parser")
             text = soup.get_text(separator="\n", strip=True)
+            text = text.replace("\n", " ")  # replace line breaks with spaces throughout all docs
 
             return text
         except Exception as e:

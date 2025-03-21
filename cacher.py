@@ -29,7 +29,7 @@ def cache_result(query, step, text):
     dir_path = get_dir_path(step)
     os.makedirs(dir_path, exist_ok=True)
 
-    with open(f"{dir_path}/{query_fn}.txt", 'w') as file:
+    with open(f"{dir_path}/{query_fn}.txt", 'w', encoding='utf-8') as file:
         file.write(text)
     print(f"cache PUT {step}/{query_fn}")
 
@@ -45,7 +45,7 @@ def check_cache(query, step):
 
     query_file = get_file(query, step)
     print(f"cache GET {step}/{query_fn}")
-    with open(file) as f:
+    with open(file, enconding='utf-8') as f:
         return f.read()
     
 
