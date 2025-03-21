@@ -19,43 +19,34 @@ from cacher import cache
 import multiprocessing
 
 
-# some pages take too long to load
-class TimeoutException(Exception):
-    pass
-
-def timeout_handler(signum, frame):
-    raise TimeoutException()
-
 @cache
-def google_scrape(url, array: list[str], timeout=10):
-    retval = None
-    try:
-        #signal.signal(signal.SIGALRM, timeout_handler)
-        #signal.alarm(timeout)
+def google_scrape(url, timeout=10):
+    def fetch():
+        try:
+            page = requests.get(url)
+            if "text/html" not in page.headers["Content-Type"]:
+                print(f"No html on {url}")
+                return None
+            soup = BeautifulSoup(page.content, "html.parser")
+            text = soup.get_text(separator="\n", strip=True)
 
-
-        page = requests.get(url)
-        if "text/html" not in page.headers["Content-Type"]:
-            print(f"No html on {url}")
+            return text
+        except Exception as e:
+            print(f"Error scraping {url}: {e}")
             return None
-        soup = BeautifulSoup(page.content, "html.parser")
-        text = soup.get_text(separator="\n", strip=True)
 
-        # reset alarm after function completes
-        #signal.alarm(0)
-        array.append(text)
-        #print(array)
-        return text
-    except TimeoutException:
-        print(f"Timeout: {url} took too long.")
-        retval = ""
-    except Exception as e:
-        print(f"Error scraping {url}: {e}")
-        retval = None
-    #finally:
-        #signal.alarm(0) # ensure alarm is disabled even if there is an exception
-    array.append(retval)
-    return retval
+    result = [None]
+    def fill_result():
+        result[0] = fetch()
+
+    thread = threading.Thread(target=fill_result)
+    thread.start
+    thread.join(timeout)
+
+    if thread.is_alive():
+        print(f"Timeout: {url} took too long")
+        return None
+    return result[0]
 
 
 @cache
@@ -76,21 +67,10 @@ def get_raw_docs(query, num_docs=10):
     results = []
     urls = get_google_urls(query, num_docs)
     for url in urls.split("\n"):
-        scrapeList = []
-        p = multiprocessing.Process(target=google_scrape, args=(url, scrapeList,))
-        p.start()
-        p.join(20)
-        if p.is_alive():
-            print("Timed out.")
-            p.terminate()
-            p.join()
-        else:
-            print(scrapeList)
-            text = scrapeList[0]
-            if text is None or text == "":
-                continue
-
-            results.append(Document(text=text))
+        text = google_scrape(url)
+        if text is None or text == "":
+            continue
+        results.append(Document(text=text))
     return results
 
 '''
