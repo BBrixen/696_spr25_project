@@ -6,6 +6,8 @@ llama-index-embeddings-instructor==0.3.0
 llama-index-embeddings-openai==0.3.1
 llama-index-llms-ibm==0.3.3
 llama-index-llms-openai==0.3.25
+llama-index-llms-ollama==0.5.3
+ollama==0.4.7
 llama_cpp_python==0.3.8
 numpy==1.26.4
 openai==1.66.3
