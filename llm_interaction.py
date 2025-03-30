@@ -5,9 +5,9 @@ import openai
 from llama_index.llms.ollama import Ollama
 
 # handling apis
-from api_keys import openai_api_key
-client = OpenAI(api_key=openai_api_key)
-openai.api_key = openai_api_key
+#from api_keys import openai_api_key
+#client = OpenAI(api_key=openai_api_key)
+#openai.api_key = openai_api_key
 
 
 def ask_llm(query, prompt, local=True):
@@ -38,6 +38,6 @@ def ask_openai(query, prompt):
             }
         ]
 
-    chat = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
-    reply = chat.choices[0].message.content
-    return reply
+    #chat = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
+    #reply = chat.choices[0].message.content
+    #return reply

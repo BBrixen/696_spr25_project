@@ -29,18 +29,28 @@ def llm_trust(query, document, local=True):
     Use the source of the document, as well as any other information you can infer, to aid
     in your evaluation.
 
+    Source:
+    {document.metadata["source"]}
+
     Document:
-    {document}
+    {document.text.replace("\n", " ")}
 
     Instructions:
     1. Respond with ONLY "yes" or "no"
     2. A "yes" means that this document only contains factual and unbiased information.
     3. A "no" means that this document contains verifiably incorrect claims, or aims to mislead the reader through clear bias.
-    """
+    
+    """ #4. After the yes or no, explain why the document is or is not trustworthy
+    #Comment on the previous line can be used to look at LLM """logic""", though it's unclear how actually helpful that is tbh
+    print(prompt)
+    print()
 
     # recall that for caching, the document is the unique id for this func call
-    llm_trust_ans = ask_llm(document, prompt, local=local)
-    llm_trust_ans = llm_trust_ans.lower().strip().translate(str.maketrans('','',string.punctuation)).strip()
+    llm_trust_ans = ask_llm(document.text.replace("\n", " "), prompt, local=local)
+    print(llm_trust_ans)
+    llm_trust_ans = llm_trust_ans.strip()[0:3].lower().translate(str.maketrans('','',string.punctuation)).strip()
+    print(llm_trust_ans == 'yes')
+    print("\n\n\n")
     return llm_trust_ans == 'yes'
 
 

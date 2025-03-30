@@ -14,14 +14,15 @@ from bs4 import BeautifulSoup
 import requests
 import math
 import signal
-from llama_cpp import Llama
+#from llama_cpp import Llama
 from cacher import cache
-import multiprocessing
 from llama_index.llms.ollama import Ollama
+import threading
+from urllib.parse import urlsplit
 
 
 @cache
-def google_scrape(url, timeout=10):
+def google_scrape(url, timeout=100):
     def fetch():
         try:
             page = requests.get(url)
@@ -42,7 +43,7 @@ def google_scrape(url, timeout=10):
         result[0] = fetch()
 
     thread = threading.Thread(target=fill_result)
-    thread.start
+    thread.start()
     thread.join(timeout)
 
     if thread.is_alive():
@@ -72,7 +73,7 @@ def get_raw_docs(query, num_docs=10):
         text = google_scrape(url)
         if text is None or text == "":
             continue
-        results.append(Document(text=text))
+        results.append(Document(text=text, extra_info={"source": urlsplit(url).netloc}))
     return results
 
 '''
@@ -177,7 +178,7 @@ def cosine_similarity(vec1, vec2):
 
 # my implementation of selecting chunks from docs
 @cache
-def get_best_chunks(query, text, num_chunks=10):
+def get_best_chunks(query, text, num_chunks=10, sources=[""]*10):
     chunks = chunk_text(text, chunk_size=250)
     embedding_model = get_embedding_model()
     embeddings = [get_embeddings(embedding_model, chunk) for chunk in chunks]
