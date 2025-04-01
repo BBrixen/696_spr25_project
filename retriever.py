@@ -14,7 +14,6 @@ from bs4 import BeautifulSoup
 import requests
 import math
 import signal
-#from llama_cpp import Llama
 from cacher import cache
 from llama_index.llms.ollama import Ollama
 import threading
@@ -22,7 +21,7 @@ from urllib.parse import urlsplit
 
 
 @cache
-def google_scrape(url, timeout=100):
+def google_scrape(url, timeout=30):
     def fetch():
         try:
             page = requests.get(url)
@@ -48,7 +47,7 @@ def google_scrape(url, timeout=100):
 
     if thread.is_alive():
         print(f"Timeout: {url} took too long")
-        return None
+        return ""
     return result[0]
 
 
