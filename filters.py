@@ -54,4 +54,18 @@ def llm_trust(query, document, local=True):
 
 
 def google_support(query, document, local=True):
-    return True  # default, all documents pass
+    if type(document) is str:
+        source = ""
+        doctxt = document
+    else:
+        source = f"\nSource:\n{document.metadata['source']}\n"
+        doctxt = document.text.replace("\n", " ")
+
+    prompt = f"""
+    Summarize the following chunk of text into a short question that can be google searched.
+    
+    Text:
+    {doctxt}
+    """
+    llm_trust_ans = ask_llm(doctxt, prompt, local=local)
+    print(llm_trust_ans)

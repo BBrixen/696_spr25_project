@@ -75,17 +75,18 @@ def full_pipeline(query, filter_method):
     # filter misinformation
     key_docs = filter_docs(query, key_docs, filter_method, local=local)
     # final prompt to llm
-    rag_prompt = llm_prompt(query, key_docs)
-    llm_ans = ask_llm(query, rag_prompt, local=local)
-    return llm_ans
+    #rag_prompt = llm_prompt(query, key_docs)
+    #llm_ans = ask_llm(query, rag_prompt, local=local)
+    #return llm_ans
 
 
 def main():
     # main hyperparameters that define how this rag query will run
     query = "what does elon musk do"
-    filter_method = filters.llm_trust
+    #filter_method = filters.llm_trust
+    filter_method = filters.google_support
     ans = full_pipeline(query, filter_method)
-    print("Answer:\n\n" + ans)
+    #print("Answer:\n\n" + ans)
 
 if __name__ == '__main__':
     main()
