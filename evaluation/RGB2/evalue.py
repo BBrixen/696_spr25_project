@@ -5,7 +5,7 @@ import argparse,torch
 import os
 import json, tqdm, requests
 import yaml
-from models.models import *
+from models.models import * # type: ignore
 import sys
 
 current = os.path.dirname(os.path.realpath(__file__))

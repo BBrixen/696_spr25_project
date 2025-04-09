@@ -1,5 +1,6 @@
 from llm_interaction import ask_llm
 import string
+import retriever
 
 '''
 Below are the methods for filtering. Each should take
@@ -62,10 +63,17 @@ def google_support(query, document, local=True):
         doctxt = document.text.replace("\n", " ")
 
     prompt = f"""
-    Summarize the following chunk of text into a short question that can be google searched.
+    Summarize the following chunk of text into a short question that can be google searched. Limit it to one sentence and do not provide an answer to the question.
     
     Text:
     {doctxt}
     """
-    llm_trust_ans = ask_llm(doctxt, prompt, local=local)
-    print(llm_trust_ans)
+    llm_search = ask_llm(doctxt, prompt, local=local)
+    print("Google search start")
+    print(llm_search)
+    print("Google search end")
+    search_results = retriever.get_raw_docs(llm_search, 5)
+    for idx, result in enumerate(search_results):
+        print("Source " + str(idx) + " start:")
+        print(result.text[:250])
+        print("Source " + str(idx) + " end.")
