@@ -19,8 +19,8 @@ def ask_llm(query, prompt, local=True):
 
 
 @cache
-def ask_llama(query, prompt):
-    llm = Ollama(model='llama2', request_timeout=60.0)
+def ask_llama(query, prompt, model='llama2'):
+    llm = Ollama(model=model, request_timeout=60.0)
     response = llm.complete(prompt)
     return response.text
 
