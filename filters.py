@@ -77,7 +77,7 @@ def google_support(query, document, model, threshold=0.5):
     print("Google search start")
     print(llm_search)
     search_results = retriever.get_raw_docs(llm_search, 5)
-    support_count = sum(1 if doc_supports_claim(x) for x in search_results)
+    support_count = sum(1 if doc_supports_claim(x) else 0 for x in search_results)
     proportion_support = support_count / search_results
     return proportion_support > threshold
 

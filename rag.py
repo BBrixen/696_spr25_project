@@ -62,11 +62,10 @@ def llm_prompt(query, rag_context):
         '''
 
 
-def full_pipeline(query, filter_method):
+def full_pipeline(query, filter_method, model):
     '''
         This is the main RAG pipeline
     '''
-    model = 'gemini2.5'
 
     # initial docs from google
     documents = get_raw_docs(query)
@@ -82,11 +81,12 @@ def full_pipeline(query, filter_method):
 
 def main():
     # main hyperparameters that define how this rag query will run
+    model = 'gemini2'
     query = "what does elon musk do"
-    #filter_method = filters.llm_trust
     filter_method = filters.google_support
-    ans = full_pipeline(query, filter_method)
-    #print("Answer:\n\n" + ans)
+
+    ans = full_pipeline(query, filter_method, model)
+    print("Answer:\n\n" + ans)
 
 if __name__ == '__main__':
     main()

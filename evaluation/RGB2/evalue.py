@@ -8,11 +8,14 @@ import yaml
 from models.models import * # type: ignore
 import sys
 
+# reformatting to current directory
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 parent2 = os.path.dirname(parent)
 sys.path.append(parent2)
 import filters
+from llm_interaction import ask_llm
+
     
 def processdata(instance, noise_rate, passage_num, filename, correct_rate = 0):
     query = instance['query']
@@ -104,7 +107,7 @@ def getevalue(results):
         return True
             
 
-def predict(query, ground_truth, docs, model, system, instruction, temperature, dataset, filter_):
+def predict(query, ground_truth, docs, model, system, instruction, temperature, dataset, filter_, modelname):
 
     '''
     label: 0 for positive, 1 for negative, -1 for not enough information
@@ -116,10 +119,9 @@ def predict(query, ground_truth, docs, model, system, instruction, temperature, 
         prediction = model.generate(text, temperature)
 
     else:
-        # TODO this is where we can filter docs to see if they perform any better
         filtered_docs = []
         for doc in docs:
-            if filter_(query, doc):
+            if filter_(query, doc, modelname):
                 filtered_docs.append(doc)
 
         docs = '\n'.join(filtered_docs)
@@ -152,7 +154,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '--modelname', type=str, default='local',
+        '--modelname', type=str, default='gemini2',
         help='model name'
     )
     parser.add_argument(
@@ -225,26 +227,27 @@ if __name__ == '__main__':
     system = prompt['system']
     instruction = prompt['instruction']
 
-    if modelname == 'chatgpt':
-        model = OpenAIAPIModel(api_key = args.api_key, url = args.url)
-    elif 'Llama-2' in modelname:
-        model = LLama2(plm = args.plm)
-    elif 'chatglm' in modelname:
-        model = ChatglmModel(plm = args.plm)
-    elif 'moss' in modelname:
-        model = Moss(plm = args.plm)
-    elif 'vicuna' in modelname:
-        model = Vicuna(plm = args.plm)
-    elif 'Qwen' in modelname:
-        model = Qwen(plm = args.plm)
-    elif 'Baichuan' in modelname:
-        model = Baichuan(plm = args.plm)
-    elif 'WizardLM' in modelname:
-        model = WizardLM(plm = args.plm)
-    elif 'BELLE' in modelname:
-        model = BELLE(plm = args.plm)
-    elif 'local' in modelname:
-        model = Local(plm= args.plm)
+    # if modelname == 'chatgpt':
+    #     model = OpenAIAPIModel(api_key = args.api_key, url = args.url)
+    # elif 'Llama-2' in modelname:
+    #     model = LLama2(plm = args.plm)
+    # elif 'chatglm' in modelname:
+    #     model = ChatglmModel(plm = args.plm)
+    # elif 'moss' in modelname:
+    #     model = Moss(plm = args.plm)
+    # elif 'vicuna' in modelname:
+    #     model = Vicuna(plm = args.plm)
+    # elif 'Qwen' in modelname:
+    #     model = Qwen(plm = args.plm)
+    # elif 'Baichuan' in modelname:
+    #     model = Baichuan(plm = args.plm)
+    # elif 'WizardLM' in modelname:
+    #     model = WizardLM(plm = args.plm)
+    # elif 'BELLE' in modelname:
+    #     model = BELLE(plm = args.plm)
+
+    # using our model
+    model = Local(modelname, ask_llm)
 
     if filter_name == 'llm_trust':
         filter_ = filters.llm_trust
@@ -277,7 +280,7 @@ if __name__ == '__main__':
                     docs = []
                 else:
                     query, ans, docs = processdata(instance, noise_rate, passage_num, args.dataset, args.correct_rate)
-                label,prediction,factlabel = predict(query, ans, docs, model,system,instruction,temperature,args.dataset, filter_)
+                label,prediction,factlabel = predict(query, ans, docs, model,system,instruction,temperature,args.dataset, filter_, modelname)
                 instance['label'] = label
                 newinstance = {
                     'id': instance['id'],
@@ -329,4 +332,4 @@ if __name__ == '__main__':
 
     
 
-    json.dump(scores,open(f'{resultpath}/prediction_{args.dataset}_{modelname}_temp{temperature}_noise{noise_rate}_passage{passage_num}_correct{args.correct_rate}_{filter_name}filter_result.json','w'),ensure_ascii=False,indent=4)
+    json.dump(scores,open(f'{resultpath}/prediction_{args.dataset}_{modelname}_temp{temperature}_noise{noise_rate}_passage{passage_num}_correct{args.correct_rate}_{filter_name}_filter_result.json','w'),ensure_ascii=False,indent=4)
