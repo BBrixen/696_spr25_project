@@ -60,12 +60,7 @@ def llm_trust(query, document, model):
     return ans_is_yes(ask_llm(doctxt, prompt, model))
 
 def google_support(query, document, model, threshold=0.5):
-    if type(document) is str:
-        source = ""
-        doctxt = document
-    else:
-        source = f"\nSource:\n{document.metadata['source']}\n"
-        doctxt = document.text.replace("\n", " ")
+    doctxt, _ = get_doctxt(document)
 
     prompt = f"""
     Summarize the following chunk of text into a short question that can be google searched. Limit it to one sentence and do not provide an answer to the question.
