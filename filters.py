@@ -83,7 +83,7 @@ def google_support(query, document, model, threshold=0.5):
 
 
 def doc_supports_claim(document, claim, model):
-    doctxt = get_doctxt(document)
+    doctxt, _ = get_doctxt(document)
 
     prompt = f"""
     Determine if the following claim is supported by the provided document. 
