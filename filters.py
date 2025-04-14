@@ -20,17 +20,26 @@ If any of these functions does something expensive (themselves), we can cache it
 otherwise the ask_llm will end up caching for us)
 '''
 
-def no_filter(query, document, local=True):
-    return True  # default, all documents pass
-
-
-def llm_trust(query, document, local=True):
+def get_doctxt(document):
     if type(document) is str:
         source = ""
         doctxt = document
     else:
         source = f"\nSource:\n{document.metadata['source']}\n"
         doctxt = document.text.replace("\n", " ")
+    return doctxt
+
+def ans_is_yes(ans):
+    ans = ans.strip()[0:3].lower().translate(str.maketrans('','',string.punctuation)).strip()
+    return ans == 'yes'
+
+
+def no_filter(query, document, local=True):
+    return True  # default, all documents pass
+
+
+def llm_trust(query, document, local=True):
+    doctxt = get_doctxt(document)
 
     prompt = f"""
     Do you believe that the following document contains only factual and unbiased information.
@@ -48,13 +57,9 @@ def llm_trust(query, document, local=True):
     #4. After the yes or no, explain why the document is or is not trustworthy
     #Comment on the previous line can be used to look at LLM """logic""", though it's unclear how actually helpful that is tbh
 
-    # recall that for caching, the document is the unique id for this func call
-    llm_trust_ans = ask_llm(doctxt, prompt, local=local)
-    llm_trust_ans = llm_trust_ans.strip()[0:3].lower().translate(str.maketrans('','',string.punctuation)).strip()
-    return llm_trust_ans == 'yes'
+    return ans_is_yes(ask_llm(doctxt, prompt, local=local))
 
-
-def google_support(query, document, local=True):
+def google_support(query, document, local=True, threshold=0.5):
     if type(document) is str:
         source = ""
         doctxt = document
@@ -71,9 +76,27 @@ def google_support(query, document, local=True):
     llm_search = ask_llm(doctxt, prompt, local=local)
     print("Google search start")
     print(llm_search)
-    print("Google search end")
     search_results = retriever.get_raw_docs(llm_search, 5)
-    for idx, result in enumerate(search_results):
-        print("Source " + str(idx) + " start:")
-        print(result.text[:250])
-        print("Source " + str(idx) + " end.")
+    support_count = sum(1 if doc_supports_claim(x) for x in search_results)
+    proportion_support = support_count / search_results
+    return proportion_support > threshold
+
+
+def doc_supports_claim(document, claim, local=True):
+    doctxt = get_doctxt(document)
+
+    prompt = f"""
+    Determine if the following claim is supported by the provided document. 
+
+    Claim:
+    {claim}
+
+    Document:
+    {doctxt}
+
+    Instructions:
+    1. Respond with only "yes" or "no"
+    2. A "yes" means that this document supports the claim
+    3. A "no" means that this document refutes the claim
+    """
+    return ans_is_yes(ask_llm(doctxt, prompt, local=local))
