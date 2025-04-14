@@ -27,7 +27,7 @@ def get_doctxt(document):
     else:
         source = f"\nSource:\n{document.metadata['source']}\n"
         doctxt = document.text.replace("\n", " ")
-    return doctxt
+    return doctxt, source
 
 def ans_is_yes(ans):
     ans = ans.strip()[0:3].lower().translate(str.maketrans('','',string.punctuation)).strip()
@@ -39,7 +39,7 @@ def no_filter(query, document, model):
 
 
 def llm_trust(query, document, model):
-    doctxt = get_doctxt(document)
+    doctxt, source = get_doctxt(document)
 
     prompt = f"""
     Do you believe that the following document contains only factual and unbiased information.
