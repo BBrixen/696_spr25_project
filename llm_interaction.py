@@ -10,14 +10,15 @@ from llama_index.llms.ollama import Ollama
 
 
 def ask_llm(query, prompt, model):
-    # the query is the original query that started everything
-    # it is not used except for caching these responses
     if 'llama' in model:
         return ask_llama(query, prompt, model=model)
     else if 'gemini' in model:
         return ask_gemini(query, prompt)
-    else:
+    else if 'openai' in model:
         return ask_openai(query, prompt)
+    else:
+        print("MODEL UNDEFINED")
+        return None
 
 
 @cache
