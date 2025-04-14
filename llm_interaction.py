@@ -9,11 +9,13 @@ from llama_index.llms.ollama import Ollama
 #openai.api_key = openai_api_key
 
 
-def ask_llm(query, prompt, local=True):
+def ask_llm(query, prompt, model):
     # the query is the original query that started everything
     # it is not used except for caching these responses
-    if local:
-        return ask_llama(query, prompt)
+    if 'llama' in model:
+        return ask_llama(query, prompt, model=model)
+    else if 'gemini' in model:
+        return ask_gemini(query, prompt)
     else:
         return ask_openai(query, prompt)
 
@@ -23,6 +25,12 @@ def ask_llama(query, prompt, model='llama2'):
     llm = Ollama(model=model, request_timeout=60.0)
     response = llm.complete(prompt)
     return response.text
+
+@cache
+def ask_gemini(query, prompt):
+    # look into https://aistudio.google.com/app/apikey
+    # TODO
+    return None
 
 
 @cache

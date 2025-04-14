@@ -3,7 +3,7 @@ from cacher import cache
 from llm_interaction import ask_llm
 import filters
 
-def filter_docs(query, documents, filter_method, local=True):
+def filter_docs(query, documents, filter_method, model):
     '''
         Returns a subset of the document set which are filtered to be
         of high quality (mostly factual and limited bias)
@@ -11,7 +11,7 @@ def filter_docs(query, documents, filter_method, local=True):
     # currently, query param is not used for anything, but it *might* come
     # in handy for some filter methods later? 
 
-    documents = [doc.text.replace("\n", " ") for doc in documents if filter_method(query, doc, local=local)]
+    documents = [doc.text.replace("\n", " ") for doc in documents if filter_method(query, doc, model)]
     return "\n\n".join(documents)
 
 
@@ -28,7 +28,7 @@ def get_key_documents(query, documents, local=True):
         return "No external context"  # edge case
 
     # Get the Vector Index and Query Engine
-    vector_index = get_build_index(documents=documents, local=local)
+    vector_index = get_build_index(documents=documents, local=local)  # NOTE: still using llama2 for the vector engine, this should be fine
     query_engine = get_query_engine(sentence_index=vector_index, similarity_top_k=10, rerank_top_n=5)
     try:
         engine_response = query_engine.query(query)
@@ -66,18 +66,18 @@ def full_pipeline(query, filter_method):
     '''
         This is the main RAG pipeline
     '''
-    local = True  # if false, this will use openai
+    model = 'gemini2.5'
 
     # initial docs from google
     documents = get_raw_docs(query)
     # select key portions of documents
-    key_docs = get_key_documents(query, documents, local=local)
+    key_docs = get_key_documents(query, documents)  # using llama2 despite what model we use for the rest of this
     # filter misinformation
-    key_docs = filter_docs(query, key_docs, filter_method, local=local)
+    key_docs = filter_docs(query, key_docs, filter_method, model)
     # final prompt to llm
-    #rag_prompt = llm_prompt(query, key_docs)
-    #llm_ans = ask_llm(query, rag_prompt, local=local)
-    #return llm_ans
+    rag_prompt = llm_prompt(query, key_docs)
+    llm_ans = ask_llm(query, rag_prompt, model)
+    return llm_ans
 
 
 def main():

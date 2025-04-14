@@ -34,11 +34,11 @@ def ans_is_yes(ans):
     return ans == 'yes'
 
 
-def no_filter(query, document, local=True):
+def no_filter(query, document, model):
     return True  # default, all documents pass
 
 
-def llm_trust(query, document, local=True):
+def llm_trust(query, document, model):
     doctxt = get_doctxt(document)
 
     prompt = f"""
@@ -57,9 +57,9 @@ def llm_trust(query, document, local=True):
     #4. After the yes or no, explain why the document is or is not trustworthy
     #Comment on the previous line can be used to look at LLM """logic""", though it's unclear how actually helpful that is tbh
 
-    return ans_is_yes(ask_llm(doctxt, prompt, local=local))
+    return ans_is_yes(ask_llm(doctxt, prompt, model))
 
-def google_support(query, document, local=True, threshold=0.5):
+def google_support(query, document, model, threshold=0.5):
     if type(document) is str:
         source = ""
         doctxt = document
@@ -73,7 +73,7 @@ def google_support(query, document, local=True, threshold=0.5):
     Text:
     {doctxt}
     """
-    llm_search = ask_llm(doctxt, prompt, local=local)
+    llm_search = ask_llm(doctxt, prompt, model)
     print("Google search start")
     print(llm_search)
     search_results = retriever.get_raw_docs(llm_search, 5)
@@ -82,7 +82,7 @@ def google_support(query, document, local=True, threshold=0.5):
     return proportion_support > threshold
 
 
-def doc_supports_claim(document, claim, local=True):
+def doc_supports_claim(document, claim, model):
     doctxt = get_doctxt(document)
 
     prompt = f"""
@@ -99,4 +99,4 @@ def doc_supports_claim(document, claim, local=True):
     2. A "yes" means that this document supports the claim
     3. A "no" means that this document refutes the claim
     """
-    return ans_is_yes(ask_llm(doctxt, prompt, local=local))
+    return ans_is_yes(ask_llm(doctxt, prompt, model))
