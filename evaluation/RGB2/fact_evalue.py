@@ -79,7 +79,7 @@ if __name__ == '__main__':
         help='rate of correct passages'
     )
     parser.add_argument(
-        '--fitler', type=str, default="no",
+        '--filter', type=str, default="no",
         help='which filter to use'
     )
 
