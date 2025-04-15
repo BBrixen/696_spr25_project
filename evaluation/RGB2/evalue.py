@@ -5,16 +5,18 @@ import argparse,torch
 import os
 import json, tqdm, requests
 import yaml
-from models.models import * # type: ignore
+from evaluation.RGB2.models.models import * 
 import sys
 
 # reformatting to current directory
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-parent2 = os.path.dirname(parent)
-sys.path.append(parent2)
+# current = os.path.dirname(os.path.realpath(__file__))
+# parent = os.path.dirname(current)
+# parent2 = os.path.dirname(parent)
+# sys.path.append(parent2)
 import filters
 from llm_interaction import ask_llm
+
+path_prefix = 'evaluation/RGB2/'
 
     
 def processdata(instance, noise_rate, passage_num, filename, correct_rate = 0):
@@ -208,7 +210,7 @@ if __name__ == '__main__':
     filter_name = args.filter
 
     instances = []
-    with open(f'data/{args.dataset}.json','r') as f:
+    with open(f'{path_prefix}data/{args.dataset}.json','r') as f:
         for line in f:
             instances.append(json.loads(line))
     if 'en' in args.dataset:
@@ -219,10 +221,10 @@ if __name__ == '__main__':
         os.mkdir(resultpath)
 
     if args.factchecking:
-        prompt = yaml.load(open('config/instruction_fact.yaml', 'r'), Loader=yaml.FullLoader)[args.dataset[:2]]
+        prompt = yaml.load(open(f'{path_prefix}config/instruction_fact.yaml', 'r'), Loader=yaml.FullLoader)[args.dataset[:2]]
         resultpath = resultpath + '/fact'
     else:
-        prompt = yaml.load(open('config/instruction.yaml', 'r'), Loader=yaml.FullLoader)[args.dataset[:2]]
+        prompt = yaml.load(open(f'{path_prefix}config/instruction.yaml', 'r'), Loader=yaml.FullLoader)[args.dataset[:2]]
 
     system = prompt['system']
     instruction = prompt['instruction']
@@ -257,7 +259,7 @@ if __name__ == '__main__':
         filter_ = filters.no_filter
 
 
-    filename = f'{resultpath}/prediction_{args.dataset}_{modelname}_temp{temperature}_noise{noise_rate}_passage{passage_num}_correct{args.correct_rate}_{filter_name}_filter.json'
+    filename = f'{path_prefix}{resultpath}/prediction_{args.dataset}_{modelname}_temp{temperature}_noise{noise_rate}_passage{passage_num}_correct{args.correct_rate}_{filter_name}_filter.json'
     useddata = {}
     if os.path.exists(filename):
         with open(filename) as f:
@@ -332,4 +334,4 @@ if __name__ == '__main__':
 
     
 
-    json.dump(scores,open(f'{resultpath}/prediction_{args.dataset}_{modelname}_temp{temperature}_noise{noise_rate}_passage{passage_num}_correct{args.correct_rate}_{filter_name}_filter_result.json','w'),ensure_ascii=False,indent=4)
+    json.dump(scores,open(f'{path_prefix}{resultpath}/prediction_{args.dataset}_{modelname}_temp{temperature}_noise{noise_rate}_passage{passage_num}_correct{args.correct_rate}_{filter_name}_filter_result.json','w'),ensure_ascii=False,indent=4)
