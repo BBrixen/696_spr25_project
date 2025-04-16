@@ -4,6 +4,7 @@ import openai
 from llama_index.llms.ollama import Ollama
 import requests
 from api_keys import openai_api_key, gemini_api_key
+import time
 
 
 def ask_llm(query, prompt, model):
