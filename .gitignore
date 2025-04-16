@@ -2,4 +2,5 @@ api_keys.py
 venv/
 __pycache__/
 vector_store/
-models/
+/models/
+!/evaluation/RGB2/models/
