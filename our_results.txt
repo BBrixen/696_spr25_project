@@ -1,0 +1,4 @@
+RGB
+memorization allowed:
+no rag: 0.27
+adversarial rag documents: 0.08
