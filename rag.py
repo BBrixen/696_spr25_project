@@ -62,7 +62,7 @@ def full_pipeline(query, filter_method, model):
     # select key portions of documents
     key_docs = get_key_documents(query, documents)  # using llama2 despite what model we use for the rest of this
     # filter misinformation
-    key_docs = filter_docs(query, key_docs, filter_method, model)
+    key_docs = filter_method(query, key_docs, model)
     # final prompt to llm
     rag_prompt = llm_prompt(query, key_docs)
     llm_ans = ask_llm(query, rag_prompt, model)
@@ -73,7 +73,7 @@ def main():
     # main hyperparameters that define how this rag query will run
     model = 'gemini2'
     query = "what does elon musk do"
-    filter_method = filters.google_support
+    filter_method = filters.google_support_entailment
 
     ans = full_pipeline(query, filter_method, model)
     print("Answer:\n\n" + ans)
