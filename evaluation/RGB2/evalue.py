@@ -121,11 +121,7 @@ def predict(query, ground_truth, docs, model, system, instruction, temperature, 
         prediction = model.generate(text, temperature)
 
     else:
-        filtered_docs = []
-        for doc in docs:
-            if filter_(query, doc, modelname):
-                filtered_docs.append(doc)
-
+        filtered_docs = filter_(docs)
         docs = '\n'.join(filtered_docs)
 
         
