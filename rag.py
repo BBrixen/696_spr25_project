@@ -3,16 +3,6 @@ from cacher import cache
 from llm_interaction import ask_llm
 import filters
 
-def filter_docs(query, documents, filter_method, model):
-    '''
-        Returns a subset of the document set which are filtered to be
-        of high quality (mostly factual and limited bias)
-    '''
-    # currently, query param is not used for anything, but it *might* come
-    # in handy for some filter methods later? 
-
-    documents = [doc.text.replace("\n", " ") for doc in documents if filter_method(query, doc, model)]
-    return "\n\n".join(documents)
 
 
 @cache
