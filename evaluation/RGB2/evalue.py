@@ -206,7 +206,7 @@ if __name__ == '__main__':
     filter_name = args.filter
 
     instances = []
-    with open(f'{path_prefix}data/{args.dataset}.json','r') as f:
+    with open(f'{path_prefix}data/{args.dataset}.json','r', encoding="utf8") as f:
         for line in f:
             instances.append(json.loads(line))
     if 'en' in args.dataset:
@@ -217,10 +217,10 @@ if __name__ == '__main__':
         os.mkdir(resultpath)
 
     if args.factchecking:
-        prompt = yaml.load(open(f'{path_prefix}config/instruction_fact.yaml', 'r'), Loader=yaml.FullLoader)[args.dataset[:2]]
+        prompt = yaml.load(open(f'{path_prefix}config/instruction_fact.yaml', 'r'), Loader=yaml.FullLoader, encoding="utf8")[args.dataset[:2]]
         resultpath = resultpath + '/fact'
     else:
-        prompt = yaml.load(open(f'{path_prefix}config/instruction.yaml', 'r'), Loader=yaml.FullLoader)[args.dataset[:2]]
+        prompt = yaml.load(open(f'{path_prefix}config/instruction.yaml', 'r'), Loader=yaml.FullLoader, encoding="utf8")[args.dataset[:2]]
 
     system = prompt['system']
     instruction = prompt['instruction']
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     filename = f'{path_prefix}{resultpath}/prediction_{args.dataset}_{modelname}_temp{temperature}_noise{noise_rate}_passage{passage_num}_correct{args.correct_rate}_{filter_name}_filter.json'
     useddata = {}
     if os.path.exists(filename):
-        with open(filename) as f:
+        with open(filename, encoding="utf8") as f:
             for line in f:
                 data = json.loads(line)
                 useddata[data['id']] = data
