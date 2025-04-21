@@ -249,8 +249,10 @@ if __name__ == '__main__':
 
     if filter_name == 'llm_trust':
         filter_ = filters.llm_trust
-    elif filter_name == 'google_support':
-        filter_ = filters.google_support
+    elif filter_name == 'google_support_entailment':
+        filter_ = filters.google_support_entailment
+    elif filter_name == 'google_support_hit_count':
+        filter_ = filters.google_support_hit_count
     else:
         filter_ = filters.no_filter
 

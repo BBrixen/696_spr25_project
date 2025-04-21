@@ -1,6 +1,10 @@
 from llm_interaction import ask_llm
 import string
 import retriever
+import requests
+from bs4 import BeautifulSoup
+import argparse
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 '''
 Below are the methods for filtering. Each should take
@@ -26,18 +30,20 @@ def no_filter(query, documents, model):
 
 
 def llm_trust(query, documents, model):
-    documents = [doc.text.replace("\n", " ") for doc in documents if llm_trust_doc(query, doc, model)]
+    documents = [doc.text.replace("\n", " ") 
+            for doc in documents if llm_trust_doc(query, doc, model)]
     return docs_to_str(documents)
 
 
 def google_support_entailment(query, documents, model):
-    documents = [doc.text.replace("\n", " ") for doc in documents if google_support_entailment_doc(query, doc, model)]
+    documents = [doc.text.replace("\n", " ") 
+            for doc in documents if google_support_entailment_doc(query, doc, model)]
     return docs_to_str(documents)
 
 
 def google_support_hit_count(query, documents, model):
     # TODO we need to implement google_hit_count
-    document_scores = sort([(google_hit_count(doc), doc) for doc in documents])
+    document_scores = sorted([(google_hit_count(query, doc, model), doc) for doc in documents])
     top_half = document_scores[len(document_scores):]  # TODO will this round up or down... currently too braindead to tell
     better_docs = [doc.text.replace("\n", " ") for (score, doc) in top_half]
     return docs_to_str(better_docs)
@@ -72,6 +78,57 @@ def llm_trust_doc(query, document, model):
 
 
 def google_support_entailment_doc(query, document, model, threshold=0.5):
+    summary = google_summary(query, document, model)
+    search_results = retriever.get_raw_docs(summary, 5)
+
+    # we want to see if each document supports or refutes the summary
+    support_count = sum(1 if doc_supports_claim(ref_doc, summary) else 0 
+            for ref_doc in search_results)
+    proportion_support = support_count / len(search_results)
+    return proportion_support > threshold
+
+
+def doc_supports_claim(document, claim):
+    doctxt, _ = get_doctxt(document)
+
+    # Load model and tokenizer
+    tokenizer = AutoTokenizer.from_pretrained("gal-lardo/BERT-RTE-LinearClassifier")
+    model = AutoModelForSequenceClassification.from_pretrained("gal-lardo/BERT-RTE-LinearClassifier")
+
+    # Prepare input texts
+    premise = doctxt
+    hypothesis = claim
+
+    # Tokenize and predict
+    inputs = tokenizer(premise, hypothesis, return_tensors="pt", padding=True, truncation=True)
+    outputs = model(**inputs)
+    prediction = outputs.logits.argmax(-1).item()
+
+    # Convert prediction to label
+    return prediction == 1  # prediction 1 means entailment
+
+
+def google_hit_count(query, document, model):
+    google_query = google_summary(query, document, model)
+    terms = [t.translate(str.maketrans('','',string.punctuation)) for t in google_query.split()]
+    terms = [t for t in terms if t != '']
+    google_query = "+".join(terms)
+    r = requests.get('http://www.google.com/search',
+                     params={'q':google_query,
+                             "tbs":"li:1"}
+                    )
+
+    # TODO this is broken
+    soup = BeautifulSoup(r.text)
+    print(soup.prettify())
+    return 0
+
+
+"""
+Random, less involved helpers
+"""
+
+def google_summary(query, document, model):
     doctxt, _ = get_doctxt(document)
 
     prompt = f"""
@@ -83,41 +140,7 @@ def google_support_entailment_doc(query, document, model, threshold=0.5):
     Text:
     {doctxt}
     """
-    llm_search = ask_llm(doctxt, prompt, model)
-    print("Google search start")
-    print(llm_search)
-    search_results = retriever.get_raw_docs(llm_search, 5)
-    support_count = sum(1 if doc_supports_claim(x) else 0 for x in search_results)
-    proportion_support = support_count / search_results
-    return proportion_support > threshold
-
-
-def doc_supports_claim(document, claim, model):
-    doctxt, _ = get_doctxt(document)
-
-    prompt = f"""
-    Determine if the following claim is supported by the provided document. 
-
-    Claim:
-    {claim}
-
-    Document:
-    {doctxt}
-
-    Instructions:
-    1. Respond with only "yes" or "no"
-    2. A "yes" means that this document supports the claim
-    3. A "no" means that this document refutes the claim
-    """
-    # TODO we will change this to use a huggingface model
-    return ans_is_yes(ask_llm(doctxt, prompt, model))
-
-
-    
-
-"""
-Helpers
-"""
+    return ask_llm(doctxt, prompt, model)
 
 def get_doctxt(document):
     if type(document) is str:

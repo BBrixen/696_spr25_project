@@ -1,36 +1,7 @@
-from retriever import get_raw_docs, get_best_chunks, get_build_index, get_query_engine
+from retriever import get_raw_docs, get_build_index, get_query_engine, get_key_documents
 from cacher import cache
 from llm_interaction import ask_llm
 import filters
-
-
-
-@cache
-def get_key_documents(query, documents, local=True):
-    '''
-        This splits the documents into chunks and identifies the
-        most useful documents for the given query. 
-
-        This takes the long list of input documents and finds key portions of
-        those documents to serve as the RAG documents for the LLM
-    '''
-    if len(documents) == 0:
-        return "No external context"  # edge case
-
-    # Get the Vector Index and Query Engine
-    vector_index = get_build_index(documents=documents, local=local)  # NOTE: still using llama2 for the vector engine, this should be fine
-    query_engine = get_query_engine(sentence_index=vector_index, similarity_top_k=10, rerank_top_n=5)
-    try:
-        engine_response = query_engine.query(query)
-        context_docs = engine_response.source_nodes
-        #print(context_docs)
-        #print("\n\n".join([doc.text.replace("\n", " ") for doc in context_docs]))
-        return context_docs
-        # \n\n is doc separator since no documents contain \n in them
-        # \n is removed during fetch, and removed again now just in case
-    except Exception as e:
-        print(f"Error getting chunks: {e}")
-        return ""
 
 
 def llm_prompt(query, rag_context):

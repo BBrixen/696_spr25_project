@@ -20,6 +20,7 @@ import threading
 from urllib.parse import urlsplit
 
 
+
 @cache
 def google_scrape(url, timeout=30):
     def fetch():
@@ -80,6 +81,49 @@ following this tutorial:
 https://www.freecodecamp.org/news/how-to-build-a-rag-pipeline-with-llamaindex/
 '''
 
+def get_key_documents(query, documents, local=True):
+    docs_as_str = _get_key_documents(query, documents, local=local)
+    docs_list = [str_to_doc(doc_str) for doc_str in docs_as_str.split("\n\n")]
+    return docs_list
+
+
+def doc_to_str(doc):
+    text = doc.text.replace('\n', ' ')
+    src = doc.metadata['source']
+    return f"{text}\n{src}"
+
+def str_to_doc(s):
+    s = s.split('\n')
+    text = s[0]
+    src = s[1]
+    return Document(text=text, extra_info={'source': src})
+
+
+@cache
+def _get_key_documents(query, documents, local=True):
+    '''
+        This splits the documents into chunks and identifies the
+        most useful documents for the given query. 
+
+        This takes the long list of input documents and finds key portions of
+        those documents to serve as the RAG documents for the LLM
+    '''
+    if len(documents) == 0:
+        return "No external context"  # edge case
+
+    # Get the Vector Index and Query Engine
+    vector_index = get_build_index(documents=documents, local=local)  # NOTE: still using llama2 for the vector engine, this should be fine
+    query_engine = get_query_engine(sentence_index=vector_index, similarity_top_k=10, rerank_top_n=5)
+    try:
+        engine_response = query_engine.query(query)
+        context_docs = engine_response.source_nodes
+        return "\n\n".join([doc_to_str(doc) for doc in context_docs])
+        # \n\n is doc separator since no documents contain \n in them
+        # \n is removed during fetch, and removed again now just in case
+    except Exception as e:
+        print(f"Error getting chunks: {e}")
+        return ""
+
 def get_build_index(documents, local=True):
     """
     Builds or loads a vector store index from the given documents.
@@ -132,59 +176,4 @@ def get_query_engine(sentence_index, similarity_top_k=10, rerank_top_n=5):
         similarity_top_k=similarity_top_k, node_postprocessors=[postproc, rerank]
     )
     return engine
-
-
-'''
-following this tutorial:
-https://medium.com/@mahakal001/building-a-rag-pipeline-step-by-step-0a5e1ac68562
-'''
-
-# helpers
-
-def read_text_file(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
-        text = file.read()
-    return text
-
-def chunk_text(text, chunk_size):
-    chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
-    return chunks
-
-def get_embedding_model():
-    embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
-    return embed_model
-
-def get_embeddings(embed_model, text: str):
-    embeddings = embed_model.get_text_embedding(text)
-    return embeddings
-
-def dot_product(vec1, vec2):
-    return sum(a * b for a, b in zip(vec1, vec2))
-
-def magnitude(vec):
-    return math.sqrt(sum(v**2 for v in vec))
-
-def cosine_similarity(vec1, vec2):
-    dot_prod = dot_product(vec1, vec2)
-    mag_vec1 = magnitude(vec1)
-    mag_vec2 = magnitude(vec2)
-
-    if mag_vec1 == 0 or mag_vec2 == 0:
-        return 0  # Handle division by zero
-
-    return dot_prod / (mag_vec1 * mag_vec2)
-
-
-# my implementation of selecting chunks from docs
-@cache
-def get_best_chunks(query, text, num_chunks=10, sources=[""]*10):
-    chunks = chunk_text(text, chunk_size=250)
-    embedding_model = get_embedding_model()
-    embeddings = [get_embeddings(embedding_model, chunk) for chunk in chunks]
-
-    query_embedding = get_embeddings(embedding_model, query)
-    ratings = [cosine_similarity(query_embedding, chunk) for chunk in embeddings]
-    top_chunk_ids = np.argpartition(ratings, -num_chunks)[-num_chunks:]
-
-    return [chunks[i] for i in top_chunk_ids]
 
