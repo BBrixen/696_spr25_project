@@ -5,14 +5,14 @@ import argparse,torch
 import os
 import json, tqdm, requests
 import yaml
-from evaluation.RGB2.models.models import * 
+from models.models import * 
 import sys
 
 # reformatting to current directory
-# current = os.path.dirname(os.path.realpath(__file__))
-# parent = os.path.dirname(current)
-# parent2 = os.path.dirname(parent)
-# sys.path.append(parent2)
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+parent2 = os.path.dirname(parent)
+sys.path.append(parent2)
 import filters
 from llm_interaction import ask_llm
 
@@ -121,7 +121,7 @@ def predict(query, ground_truth, docs, model, system, instruction, temperature, 
         prediction = model.generate(text, temperature)
 
     else:
-        filtered_docs = filter_(docs)
+        filtered_docs = filter_(query=query, documents=docs, model=modelname)
         docs = '\n'.join(filtered_docs)
 
         
@@ -181,7 +181,7 @@ if __name__ == '__main__':
         help='rate of noisy passages'
     )
     parser.add_argument(
-        '--correct_rate', type=float, default=0.0,
+        '--correct_rate', type=float, default=0.5,
         help='rate of correct passages'
     )
     parser.add_argument(
@@ -193,7 +193,7 @@ if __name__ == '__main__':
         help='whether to fact checking'
     )
     parser.add_argument(
-        '--filter', type=str, default='no',
+        '--filter', type=str, default='google_support_entailment',
         help='which filter to use'
     )
     
@@ -217,10 +217,10 @@ if __name__ == '__main__':
         os.mkdir(resultpath)
 
     if args.factchecking:
-        prompt = yaml.load(open(f'{path_prefix}config/instruction_fact.yaml', 'r'), Loader=yaml.FullLoader, encoding="utf8")[args.dataset[:2]]
+        prompt = yaml.load(open(f'{path_prefix}config/instruction_fact.yaml', 'r', encoding="utf8"), Loader=yaml.FullLoader)[args.dataset[:2]]
         resultpath = resultpath + '/fact'
     else:
-        prompt = yaml.load(open(f'{path_prefix}config/instruction.yaml', 'r'), Loader=yaml.FullLoader, encoding="utf8")[args.dataset[:2]]
+        prompt = yaml.load(open(f'{path_prefix}config/instruction.yaml', 'r', encoding="utf8"), Loader=yaml.FullLoader)[args.dataset[:2]]
 
     system = prompt['system']
     instruction = prompt['instruction']

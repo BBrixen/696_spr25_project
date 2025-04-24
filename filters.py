@@ -36,8 +36,13 @@ def llm_trust(query, documents, model):
 
 
 def google_support_entailment(query, documents, model):
-    documents = [doc.text.replace("\n", " ") 
-            for doc in documents if google_support_entailment_doc(query, doc, model)]
+    documents = []
+    for doc in documents:
+        if google_support_entailment_doc(query, doc, model):
+            if type(doc) is str:
+                documents.append(doc)
+            else:
+                documents.append(doc.text.replace("\n", " "))
     return docs_to_str(documents)
 
 

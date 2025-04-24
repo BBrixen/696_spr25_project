@@ -3,3 +3,5 @@ memorization allowed:
 no rag: 0.27
 adversarial rag documents: 0.08
 LLM Trust: 0.17
+
+Correct rate 0.5 google support: 0.26
