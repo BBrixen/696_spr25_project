@@ -1,0 +1,5 @@
+https://en.wikipedia.org/wiki/OpenAI
+https://en.wikipedia.org/wiki/OpenAI_Five
+https://en.wikipedia.org/wiki/OpenAI_o1
+https://en.wikipedia.org/wiki/OpenAI_o3
+https://en.wikipedia.org/wiki/OpenAI_Operator

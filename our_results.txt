@@ -3,13 +3,6 @@ memorization allowed:
 no rag: 0.27
 adversarial rag documents: 0.08
 LLM Trust filter: 0.17
-Correct rate 0.5 google support (entailment) filter: 0.26
-Correct rate 1 passage 1 google support (entailment): 0.25
-
-
-cursory google documents added:
-no rag:
-adversarial rag documents:
-LLM Trust filter:
-Correct rate 0.5 google support (entailment) filter:
-Top half google-hit count filter:
+Correct rate 0.5 google support filter: 0.41
+Correct rate 1 passage 1 google support: 
+Correct rate 1 passage 2 no filter: 0.99

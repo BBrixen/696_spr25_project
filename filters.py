@@ -35,15 +35,16 @@ def llm_trust(query, documents, model):
     return docs_to_str(documents)
 
 
-def google_support_entailment(query, documents, model):
-    documents = []
+def google_support(query, documents, model):
+    print("GOOGLE SUPPORT")
+    filtered_documents = []
     for doc in documents:
         if google_support_entailment_doc(query, doc, model):
             if type(doc) is str:
-                documents.append(doc)
+                filtered_documents.append(doc)
             else:
-                documents.append(doc.text.replace("\n", " "))
-    return docs_to_str(documents)
+                filtered_documents.append(doc.text.replace("\n", " "))
+    return docs_to_str(filtered_documents)
 
 
 def google_support_hit_count(query, documents, model):
@@ -83,6 +84,7 @@ def llm_trust_doc(query, document, model):
 
 
 def google_support_entailment_doc(query, document, model, threshold=0.5):
+    print("SUPPORT ENTAILMENT")
     summary = google_summary(query, document, model)
     search_results = retriever.get_raw_docs(summary, 5)
 
@@ -110,6 +112,7 @@ def doc_supports_claim(document, claim):
     prediction = outputs.logits.argmax(-1).item()
 
     # Convert prediction to label
+    print(f"DOC SUPPORT PREDICTION: {prediction}")
     return prediction == 1  # prediction 1 means entailment
 
 

@@ -1,2 +1,1 @@
-Response:
-The document does not contain the answer to this question.
+Given that there is no provided document, I cannot answer the question. Microsoft's AR headset is called the **HoloLens**.

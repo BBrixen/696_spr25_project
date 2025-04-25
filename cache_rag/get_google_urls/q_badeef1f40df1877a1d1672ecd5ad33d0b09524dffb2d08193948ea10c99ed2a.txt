@@ -1,0 +1,5 @@
+https://developer.amazon.com/en-US/alexa
+https://developer.amazon.com/en-US/alexa/alexa-skills-kit
+https://developer.amazon.com/en-US/alexa/solution-providers
+https://developer.amazon.com/en-US/alexa/alexa-ai
+https://developer.amazon.com/en-US/alexa/devices/connected-devices/development-resources
