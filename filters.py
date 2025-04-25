@@ -83,7 +83,7 @@ def llm_trust_doc(query, document, model):
     return ans_is_yes(ask_llm(doctxt, prompt, model))
 
 
-def google_support_entailment_doc(query, document, model, threshold=0.5):
+def google_support_entailment_doc(query, document, model, threshold=0.25):
     print("SUPPORT ENTAILMENT")
     summary = google_summary(query, document, model)
     search_results = retriever.get_raw_docs(summary, 5)
