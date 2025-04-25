@@ -113,20 +113,46 @@ def doc_supports_claim(document, claim):
     return prediction == 1  # prediction 1 means entailment
 
 
-def google_hit_count(query, document, model):
-    google_query = google_summary(query, document, model)
-    terms = [t.translate(str.maketrans('','',string.punctuation)) for t in google_query.split()]
-    terms = [t for t in terms if t != '']
-    google_query = "+".join(terms)
-    r = requests.get('http://www.google.com/search',
-                     params={'q':google_query,
-                             "tbs":"li:1"}
-                    )
+def google_hit_count(query):
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+    params = {
+        "q": query,
+        "hl": "en"
+    }
+    url = "https://www.google.com/search"
 
-    # TODO this is broken
-    soup = BeautifulSoup(r.text)
-    print(soup.prettify())
+    response = requests.get(url, headers=headers, params=params)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Find the element with the result stats
+    result_stats = soup.find("div", id="result-stats")
+    if not result_stats:
+        return None
+
+    # Extract number using regex
+    match = re.search(r"About ([\d,]+) results", result_stats.text)
+    if match:
+        return int(match.group(1).replace(",", ""))
+    
     return 0
+
+
+# def google_hit_count(query, document, model):
+#     google_query = google_summary(query, document, model)
+#     terms = [t.translate(str.maketrans('','',string.punctuation)) for t in google_query.split()]
+#     terms = [t for t in terms if t != '']
+#     google_query = "+".join(terms)
+#     r = requests.get('http://www.google.com/search',
+#                      params={'q':google_query,
+#                              "tbs":"li:1"}
+#                     )
+# 
+#     # TODO this is broken
+#     soup = BeautifulSoup(r.text)
+#     print(soup.prettify())
+#     return 0
 
 
 """

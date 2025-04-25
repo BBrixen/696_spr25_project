@@ -5,7 +5,7 @@ import argparse,torch
 import os
 import json, tqdm, requests
 import yaml
-from models.models import * 
+from evaluation.RGB2.models.models import * 
 import sys
 
 # reformatting to current directory
