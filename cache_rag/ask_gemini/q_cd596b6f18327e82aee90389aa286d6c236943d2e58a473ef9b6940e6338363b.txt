@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 I'm sorry, but I do not have access to the content of documents. Therefore, I cannot provide the answer to your question based on the provided document.
+=======
+I am sorry, but I do not have access to the document and cannot answer the question.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

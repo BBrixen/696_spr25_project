@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 Based on the document provided, I cannot answer the question, "When was Xenoblade Chronicles X released in Japan?".
+=======
+Answer:
+Xenoblade Chronicles X was released in Japan on April 29, 2015.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

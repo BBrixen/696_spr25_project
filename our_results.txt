@@ -4,5 +4,7 @@ no rag: 0.27
 adversarial rag documents: 0.08
 LLM Trust filter: 0.17
 Correct rate 0.5 google support filter: 0.41
-Correct rate 1 passage 1 google support: 
+Correct rate 1 passage 1 google support (0.75 support portion needed): 0.4
+Correct rate 1 passage 1 google support (0.5 support portion needed): 0.66
+Correct rate 1 passage 1 google support (0.25 support portion needed): 0.85
 Correct rate 1 passage 2 no filter: 0.99

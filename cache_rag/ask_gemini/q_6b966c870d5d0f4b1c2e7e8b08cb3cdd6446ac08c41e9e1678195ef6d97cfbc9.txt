@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 This question cannot be answered from the given source.
+=======
+Based on the provided document, I cannot answer the question "When was Pixel 5a announced?". There is no information about the announcement date of Pixel 5a in the given document.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

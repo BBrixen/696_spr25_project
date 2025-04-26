@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 Based on my knowledge, the city that hosted the Olympic Games in 2012 was London. 
+=======
+Based on my knowledge, **London** hosted the Olympic Games in 2012.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

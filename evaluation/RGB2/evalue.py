@@ -181,11 +181,11 @@ if __name__ == '__main__':
         help='rate of noisy passages'
     )
     parser.add_argument(
-        '--correct_rate', type=float, default=0.5,
+        '--correct_rate', type=float, default=1,
         help='rate of correct passages'
     )
     parser.add_argument(
-        '--passage_num', type=int, default=5,
+        '--passage_num', type=int, default=1,
         help='number of external passages'
     )
     parser.add_argument(

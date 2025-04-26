@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 This question cannot be answered from the given document.
+=======
+While I do not have access to external websites or specific files from your computer, I know that Sundar Pichai was the CEO of Google in 2021.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

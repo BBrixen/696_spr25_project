@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 Based on my knowledge, the credited director of "Bohemian Rhapsody" is **Bryan Singer**. However, Dexter Fletcher stepped in to complete the film after Singer was fired.
+=======
+Based on my knowledge, the credited director of "Bohemian Rhapsody" is Bryan Singer. However, Dexter Fletcher stepped in to complete the film.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

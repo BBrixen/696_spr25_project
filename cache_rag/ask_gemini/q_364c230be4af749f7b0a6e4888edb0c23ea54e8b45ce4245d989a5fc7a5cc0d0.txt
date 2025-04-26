@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 This question cannot be answered from the given document.
+=======
+Based on the document provided, I cannot answer the question "Who won the men's singles U.S. Open 2021?". I need the content of the document to provide an answer.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

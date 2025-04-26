@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 Based on the provided context, I am unable to answer this question.
+=======
+Based on the document provided, I cannot answer the question of who won the men's singles U.S. Open in 2020. The document does not contain that information.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

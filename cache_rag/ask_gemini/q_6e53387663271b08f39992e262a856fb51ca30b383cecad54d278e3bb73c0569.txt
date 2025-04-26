@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 This question cannot be answered from the given document.
+=======
+This question cannot be answered from the given document. I need the content of the document to answer the question.
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f

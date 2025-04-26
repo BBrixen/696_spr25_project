@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 According to the document, The Blacklist Season 1 premiered on September 23, 2013.
+=======
+Response:
+September 23, 2013
+>>>>>>> 8d04ab79e744b8ba1d2095c5e12d0c08b53f5f5f
