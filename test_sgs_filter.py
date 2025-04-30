@@ -96,6 +96,7 @@ def report_for_threshold(corrects, incorrects, threshold):
 def main():
     corrects, incorrects = read_proportions()
     report_for_threshold(corrects, incorrects, 0)
+    report_for_threshold(corrects, incorrects, 0.1)
     report_for_threshold(corrects, incorrects, 0.25)
     report_for_threshold(corrects, incorrects, 0.3)
     report_for_threshold(corrects, incorrects, 0.35)
