@@ -1,0 +1,10 @@
+https://en.wikipedia.org/wiki/GPT-3
+https://www.einfochips.com/blog/openai-gpt-3-the-most-powerful-language-model-an-overview/
+https://venturebeat.com/ai/openai-makes-gpt-3-generally-available-through-its-api/
+https://towardsdatascience.com/openai-opens-gpt-3-for-everyone-fb7fed309f6/
+https://www.searchenginejournal.com/history-of-chatgpt-timeline/488370/
+https://developer.nvidia.com/blog/openai-presents-gpt-3-a-175-billion-parameters-language-model/
+https://www.aiwire.net/2021/11/18/openai-gtp-3-waiting-list-is-gone-as-gtp-3-is-fully-released-for-use/
+https://en.wikipedia.org/wiki/OpenAI
+https://en.wikipedia.org/wiki/GPT-4.1
+https://en.wikipedia.org/wiki/Sora_(text-to-video_model)

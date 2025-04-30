@@ -1,0 +1,10 @@
+https://en.wikipedia.org/wiki/Microsoft_HoloLens
+https://learn.microsoft.com/en-us/hololens/
+https://learn.microsoft.com/en-us/hololens/hololens-requirements
+https://learn.microsoft.com/en-us/hololens/holographic-home
+https://learn.microsoft.com/en-us/hololens/hololens-insider
+https://azure.microsoft.com/en-us/solutions/mixed-reality
+https://www.circuitstream.com/blog/what-is-mixed-reality-ultimate-guide
+https://news.microsoft.com/source/features/digital-transformation/u-s-army-to-use-hololens-technology-in-high-tech-headsets-for-soldiers/
+https://unboundxr.eu/blogs/microsoft-hololens-2-use-case-scenarios?srsltid=AfmBOorlUuslZZkGm8jJTsyVjXBOMcIDG2xzAK7qzj3v5AR96LMStCbN
+https://www.nigelfrank.com/insights/hololens-mixed-reality-dynamics-365/

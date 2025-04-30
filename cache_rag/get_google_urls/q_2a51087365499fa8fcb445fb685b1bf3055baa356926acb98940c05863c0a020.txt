@@ -1,0 +1,10 @@
+https://www.einfochips.com/blog/openai-gpt-3-the-most-powerful-language-model-an-overview/
+https://en.wikipedia.org/wiki/GPT-3
+https://www.aiwire.net/2021/11/18/openai-gtp-3-waiting-list-is-gone-as-gtp-3-is-fully-released-for-use/
+https://towardsai.net/p/l/openai-makes-gpt-3-universally-available-to-developers
+https://www.aiwire.net/2021/12/14/gpt-3-made-better-openai-adds-model-fine-tuning-capabilities-to-its-gpt-3-api/
+https://cobusgreyling.medium.com/gpt-3-fine-tuning-beta-release-is-now-enabled-e00eeb532f07
+https://aitowrite.com/blog/the-story-of-gpt-3/
+https://venturebeat.com/ai/openai-makes-gpt-3-generally-available-through-its-api/
+https://www.technologyreview.com/2020/07/20/1005454/openai-machine-learning-language-generator-gpt-3-nlp/
+https://www.forbes.com/sites/bernardmarr/2023/05/19/a-short-history-of-chatgpt-how-we-got-to-where-we-are-today/

@@ -1,0 +1,10 @@
+https://www.espn.com/golf/leaderboard/_/tournamentId/401580363
+https://www.espn.com/golf/leaderboard
+https://www.espn.com/golf/leaderboard/_/tour/eur
+https://www.espn.com/golf/leaderboard/_/tour/ntw
+https://www.espn.com/golf/player/_/id/9478/scottie-scheffler
+https://www.espn.com/golf/leaderboard/_/tournamentId/401465542
+https://www.espn.com/golf/leaderboard/_/tournamentId/401243405
+https://www.espn.com/golf/leaderboard/_/tour/pga
+http://www.espn.com/golf/leaderboard?tournamentId=401155473
+https://www.espn.com/golf/player/_/id/3470/rory-mcilroy

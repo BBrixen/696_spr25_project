@@ -1,0 +1,1 @@
+When did Algolia integrate GPT-3 with its search technology after the OpenAI API launch?
