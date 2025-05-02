@@ -80,28 +80,31 @@ def initialize():
 
 
 def report_for_threshold(corrects, incorrects, threshold):
+    def x(s):
+        return str(round(100 * s, 2))
     TP = sum(1 if prop >= threshold else 0 for prop in corrects)
     FN = len(corrects) - TP
 
     FP = sum(1 if prop >= threshold else 0 for prop in incorrects)
     TN = len(incorrects) - FP
 
-    print(f"\n{threshold=}")
-    print(f"accuracy correct:   {TP / len(corrects)}")
-    print(f"accuracy incorrect: {TN / len(incorrects)}")
     f1 = (2*TP) / (2*TP + FP + FN)
-    print(f"F1: {f1}")
+    prec = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    f2 = 5*prec*recall / (4*prec + recall)
+    aoi = TN / len(incorrects)
+    # print(f"\n{threshold=}")
+    # print(f"accuracy correct:   {TP / len(corrects)}")
+    # print(f"precision:          {prec}")
+    # print(f"accuracy incorrect: {TN / len(incorrects)}")
+    # print(f"F1:                 {f1}")
+    # print(f"F2:                 {f2}")
+    print(f"SGS( {threshold} ) & {x(recall)} & {x(prec)} & {x(aoi)} & {x(f1)} & {x(f2)} \\\\")
 
 
 def main():
     corrects, incorrects = read_proportions()
-    report_for_threshold(corrects, incorrects, 0)
-    report_for_threshold(corrects, incorrects, 0.1)
     report_for_threshold(corrects, incorrects, 0.25)
-    report_for_threshold(corrects, incorrects, 0.3)
-    report_for_threshold(corrects, incorrects, 0.35)
-    report_for_threshold(corrects, incorrects, 0.4)
-    report_for_threshold(corrects, incorrects, 0.45)
     report_for_threshold(corrects, incorrects, 0.5)
     report_for_threshold(corrects, incorrects, 0.75)
     report_for_threshold(corrects, incorrects, 1)
